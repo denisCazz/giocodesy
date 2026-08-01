@@ -155,6 +155,9 @@
     starrClose: document.getElementById("starrClose"),
     musicFab: document.getElementById("musicFab"),
     musicLabel: document.getElementById("musicLabel"),
+    audioGate: document.getElementById("audioGate"),
+    audioGateBtn: document.getElementById("audioGateBtn"),
+    audioGateSkip: document.getElementById("audioGateSkip"),
     dailyBanner: document.getElementById("dailyBanner"),
     dailyBannerTitle: document.getElementById("dailyBannerTitle"),
     dailyBannerSub: document.getElementById("dailyBannerSub"),
@@ -331,12 +334,50 @@
     els.musicLabel.textContent = on ? "ON" : "PLAY";
   }
 
-  function toggleMusic() {
-    if (!window.DesyMusic) return;
-    const on = DesyMusic.toggle();
+  async function toggleMusic() {
+    if (!window.DesyMusic) {
+      showToast("Audio non supportato su questo browser");
+      return;
+    }
+    const on = await DesyMusic.toggle();
     localStorage.setItem(MUSIC_KEY, on ? "1" : "0");
     updateMusicFab(on);
     showToast(on ? "Lobby theme ON 🎵" : "Musica in pausa");
+  }
+
+  async function sfx(name) {
+    if (!window.DesyMusic) return;
+    if (name === "click") await DesyMusic.click();
+    else if (name === "pop") await DesyMusic.pop();
+    else if (name === "fanfare") await DesyMusic.fanfare();
+  }
+
+  async function enterWithMusic() {
+    if (window.DesyMusic) {
+      await DesyMusic.unlock();
+      await DesyMusic.play();
+      localStorage.setItem(MUSIC_KEY, "1");
+      updateMusicFab(true);
+      await DesyMusic.pop();
+    }
+    closeAudioGate();
+    showToast("Musichetta attiva! 🎵");
+  }
+
+  function closeAudioGate() {
+    if (!els.audioGate) return;
+    els.audioGate.classList.add("hide");
+    setTimeout(() => {
+      els.audioGate.hidden = true;
+    }, 280);
+  }
+
+  async function enterSilent() {
+    if (window.DesyMusic) await DesyMusic.unlock();
+    localStorage.setItem(MUSIC_KEY, "0");
+    updateMusicFab(false);
+    closeAudioGate();
+    showToast("Tocca 🎵 quando vuoi la musica");
   }
 
   function loadGoals() {
@@ -690,26 +731,42 @@
 
   // Events
   document.querySelectorAll("[data-go]").forEach((btn) => {
-    btn.addEventListener("click", () => showView(btn.getAttribute("data-go")));
+    btn.addEventListener("click", () => {
+      sfx("click");
+      showView(btn.getAttribute("data-go"));
+    });
   });
 
   els.heroStage.addEventListener("click", (e) => {
     const btn = e.target.closest("[data-brawler]");
-    if (btn) onBrawlerClick(btn.getAttribute("data-brawler"));
+    if (btn) {
+      sfx("pop");
+      onBrawlerClick(btn.getAttribute("data-brawler"));
+    }
   });
 
   els.brawlerRail.addEventListener("click", (e) => {
     const btn = e.target.closest("[data-brawler]");
-    if (btn) onBrawlerClick(btn.getAttribute("data-brawler"));
+    if (btn) {
+      sfx("pop");
+      onBrawlerClick(btn.getAttribute("data-brawler"));
+    }
   });
 
-  els.panicNext.addEventListener("click", nextPanic);
-  els.panicPrev.addEventListener("click", prevPanic);
+  els.panicNext.addEventListener("click", () => {
+    sfx("click");
+    nextPanic();
+  });
+  els.panicPrev.addEventListener("click", () => {
+    sfx("click");
+    prevPanic();
+  });
 
   els.goalForm.addEventListener("submit", (e) => {
     e.preventDefault();
     const value = els.goalInput.value.trim();
     if (!value) return;
+    sfx("pop");
     addGoal(value);
     els.goalInput.value = "";
     els.goalInput.focus();
@@ -722,20 +779,29 @@
     if (!item) return;
     const id = item.getAttribute("data-id");
     const action = btn.getAttribute("data-action");
-    if (action === "toggle") toggleGoal(id);
-    if (action === "delete") deleteGoal(id);
+    if (action === "toggle") {
+      sfx("click");
+      toggleGoal(id);
+    }
+    if (action === "delete") {
+      sfx("click");
+      deleteGoal(id);
+    }
   });
 
   els.rewardClose.addEventListener("click", () => {
+    sfx("click");
     els.rewardOverlay.hidden = true;
   });
 
   els.calmClose.addEventListener("click", () => {
+    sfx("click");
     els.calmOverlay.hidden = true;
     showView("home");
   });
 
   els.starHit.addEventListener("click", () => {
+    sfx("pop");
     starClicks += 1;
     els.starHit.classList.add("spin");
     setTimeout(() => els.starHit.classList.remove("spin"), 500);
@@ -749,6 +815,7 @@
   });
 
   els.brandTitle.addEventListener("click", () => {
+    sfx("click");
     brandClicks += 1;
     if (brandClicks >= 5) {
       brandClicks = 0;
@@ -757,13 +824,22 @@
     }
   });
 
-  els.starrOpen.addEventListener("click", revealStarr);
+  els.starrOpen.addEventListener("click", () => {
+    sfx("fanfare");
+    revealStarr();
+  });
   els.starrClose.addEventListener("click", () => {
+    sfx("click");
     els.starrOverlay.hidden = true;
   });
 
   els.musicFab.addEventListener("click", toggleMusic);
-  els.dailyClaimBtn.addEventListener("click", claimDaily);
+  els.dailyClaimBtn.addEventListener("click", () => {
+    sfx("fanfare");
+    claimDaily();
+  });
+  els.audioGateBtn.addEventListener("click", enterWithMusic);
+  els.audioGateSkip.addEventListener("click", enterSilent);
 
   window.addEventListener("keydown", (e) => {
     if (e.metaKey || e.ctrlKey || e.altKey) return;
@@ -794,20 +870,12 @@
   renderGoals();
   updateDailyBanner();
 
-  // Music needs a user gesture in most browsers — FAB handles start.
-  // If previously ON, nudge user.
-  if (localStorage.getItem(MUSIC_KEY) === "1") {
-    els.musicLabel.textContent = "PLAY";
-    setTimeout(() => showToast("Tocca 🎵 per la musichetta lobby!"), 1200);
-  }
-
   if (!eggs.welcome) {
     setTimeout(() => showToast("Benvenuta nell'arena, Desy 💗"), 600);
     eggs.welcome = true;
     saveEggs();
   }
 
-  // Pulse daily banner if unclaimed
   if (canClaimDaily()) {
     els.dailyBanner.classList.add("pulse");
   }

@@ -1,14 +1,16 @@
-/* Desy Stars Lobby Theme — arcade loop in stile Brawl Stars (Web Audio) */
+/* Desy Stars audio — lobby loop + SFX (Web Audio, mobile-safe) */
 window.DesyMusic = (() => {
   let ctx = null;
   let master = null;
+  let sfxBus = null;
   let playing = false;
   let timer = null;
   let step = 0;
-  const BPM = 132;
-  const STEP_MS = (60 / BPM) * 1000 / 2; // eighth notes
+  let unlocked = false;
 
-  // Catchy lobby riff (C major / playful punches like BS menu energy)
+  const BPM = 128;
+  const STEP_MS = ((60 / BPM) * 1000) / 2;
+
   const MELODY = [
     523.25, 587.33, 659.25, 783.99, 659.25, 587.33, 523.25, null,
     659.25, 783.99, 880.0, 987.77, 880.0, 783.99, 659.25, null,
@@ -24,33 +26,64 @@ window.DesyMusic = (() => {
   ];
 
   function ensure() {
-    if (ctx) return;
+    if (ctx) return ctx;
     const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
     ctx = new AC();
     master = ctx.createGain();
-    master.gain.value = 0.22;
+    master.gain.value = 0.55;
+    sfxBus = ctx.createGain();
+    sfxBus.gain.value = 0.85;
     master.connect(ctx.destination);
+    sfxBus.connect(ctx.destination);
+    return ctx;
   }
 
-  function beep(freq, dur, type, gainVal, when) {
-    if (!freq) return;
+  async function unlock() {
+    ensure();
+    if (!ctx) return false;
+    if (ctx.state === "suspended") {
+      try {
+        await ctx.resume();
+      } catch (_) {
+        /* ignore */
+      }
+    }
+    // Silent buffer kickstarts iOS audio
+    try {
+      const buffer = ctx.createBuffer(1, 1, 22050);
+      const src = ctx.createBufferSource();
+      src.buffer = buffer;
+      src.connect(ctx.destination);
+      src.start(0);
+    } catch (_) {
+      /* ignore */
+    }
+    unlocked = ctx.state === "running";
+    return unlocked;
+  }
+
+  function tone(freq, dur, type, gainVal, when, bus) {
+    if (!freq || !ctx) return;
     const t = when ?? ctx.currentTime;
     const osc = ctx.createOscillator();
     const g = ctx.createGain();
     osc.type = type;
     osc.frequency.setValueAtTime(freq, t);
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(gainVal, t + 0.01);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    const peak = Math.max(0.001, gainVal);
+    g.gain.setValueAtTime(0.001, t);
+    g.gain.linearRampToValueAtTime(peak, t + 0.015);
+    g.gain.linearRampToValueAtTime(0.001, t + Math.max(0.04, dur));
     osc.connect(g);
-    g.connect(master);
+    g.connect(bus || master);
     osc.start(t);
-    osc.stop(t + dur + 0.02);
+    osc.stop(t + dur + 0.05);
   }
 
-  function noiseHit(dur, gainVal, when) {
+  function noiseHit(dur, gainVal, when, bus) {
+    if (!ctx) return;
     const t = when ?? ctx.currentTime;
-    const len = Math.floor(ctx.sampleRate * dur);
+    const len = Math.max(1, Math.floor(ctx.sampleRate * dur));
     const buffer = ctx.createBuffer(1, len, ctx.sampleRate);
     const data = buffer.getChannelData(0);
     for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
@@ -58,76 +91,98 @@ window.DesyMusic = (() => {
     src.buffer = buffer;
     const g = ctx.createGain();
     const filter = ctx.createBiquadFilter();
-    filter.type = "highpass";
-    filter.frequency.value = 1200;
-    g.gain.setValueAtTime(gainVal, t);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    filter.type = "bandpass";
+    filter.frequency.value = 1800;
+    filter.Q.value = 0.7;
+    const peak = Math.max(0.001, gainVal);
+    g.gain.setValueAtTime(peak, t);
+    g.gain.linearRampToValueAtTime(0.001, t + dur);
     src.connect(filter);
     filter.connect(g);
-    g.connect(master);
+    g.connect(bus || master);
     src.start(t);
-    src.stop(t + dur);
+    src.stop(t + dur + 0.02);
   }
 
   function tick() {
     if (!playing || !ctx) return;
+    if (ctx.state === "suspended") {
+      ctx.resume();
+    }
     const t = ctx.currentTime;
     const i = step % MELODY.length;
 
-    // kick on 0,4,8...
-    if (i % 4 === 0) beep(90, 0.12, "sine", 0.45, t);
-    // snare-ish
-    if (i % 8 === 4) noiseHit(0.08, 0.18, t);
-    // hi-hat
-    if (i % 2 === 0) noiseHit(0.03, 0.06, t);
+    if (i % 4 === 0) tone(95, 0.14, "sine", 0.7, t);
+    if (i % 8 === 4) noiseHit(0.09, 0.35, t);
+    if (i % 2 === 0) noiseHit(0.03, 0.12, t);
 
-    beep(BASS[i], 0.18, "triangle", 0.28, t);
-    beep(MELODY[i], 0.16, "square", 0.12, t);
-    // sparkle harmony
-    if (MELODY[i]) beep(MELODY[i] * 2, 0.1, "sine", 0.05, t);
+    tone(BASS[i], 0.2, "triangle", 0.5, t);
+    tone(MELODY[i], 0.18, "square", 0.28, t);
+    if (MELODY[i]) tone(MELODY[i] * 2, 0.12, "sine", 0.12, t);
 
     step += 1;
-    timer = setTimeout(tick, STEP_MS);
+    timer = window.setTimeout(tick, STEP_MS);
   }
 
   async function play() {
-    ensure();
-    if (ctx.state === "suspended") await ctx.resume();
-    if (playing) return;
+    await unlock();
+    if (!ctx) return false;
+    if (playing) return true;
     playing = true;
     step = 0;
     tick();
+    return true;
   }
 
   function stop() {
     playing = false;
-    clearTimeout(timer);
-    timer = null;
+    if (timer) {
+      clearTimeout(timer);
+      timer = null;
+    }
   }
 
-  function toggle() {
+  async function toggle() {
     if (playing) {
       stop();
       return false;
     }
-    play();
-    return true;
+    return play();
   }
 
   function isPlaying() {
     return playing;
   }
 
-  // Short "reward jingle" fanfare
-  function fanfare() {
-    ensure();
-    if (ctx.state === "suspended") ctx.resume();
-    const notes = [523.25, 659.25, 783.99, 1046.5];
+  async function fanfare() {
+    await unlock();
+    if (!ctx) return;
+    const notes = [523.25, 659.25, 783.99, 1046.5, 1318.5];
     notes.forEach((f, i) => {
-      beep(f, 0.22, "square", 0.16, ctx.currentTime + i * 0.09);
-      beep(f * 2, 0.18, "sine", 0.06, ctx.currentTime + i * 0.09);
+      const when = ctx.currentTime + i * 0.08;
+      tone(f, 0.28, "square", 0.45, when, sfxBus);
+      tone(f * 2, 0.22, "sine", 0.2, when, sfxBus);
     });
+    noiseHit(0.15, 0.3, ctx.currentTime + 0.35, sfxBus);
   }
 
-  return { play, stop, toggle, isPlaying, fanfare };
+  async function click() {
+    await unlock();
+    if (!ctx) return;
+    tone(880, 0.06, "square", 0.35, ctx.currentTime, sfxBus);
+    tone(1320, 0.05, "sine", 0.2, ctx.currentTime + 0.02, sfxBus);
+  }
+
+  async function pop() {
+    await unlock();
+    if (!ctx) return;
+    tone(392, 0.1, "triangle", 0.4, ctx.currentTime, sfxBus);
+    tone(587, 0.12, "square", 0.3, ctx.currentTime + 0.05, sfxBus);
+  }
+
+  async function reward() {
+    await fanfare();
+  }
+
+  return { play, stop, toggle, isPlaying, fanfare, click, pop, reward, unlock };
 })();

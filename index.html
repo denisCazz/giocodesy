@@ -29,6 +29,15 @@
     <span class="music-label" id="musicLabel">PLAY</span>
   </button>
 
+  <div id="audioGate" class="audio-gate">
+    <div class="audio-gate-card">
+      <p class="audio-gate-title">DESY STARS</p>
+      <p class="audio-gate-text">Tocca per entrare nell'arena con la musichetta 🎵</p>
+      <button type="button" class="bs-btn bs-btn-gold" id="audioGateBtn">Entra &amp; Play!</button>
+      <button type="button" class="gate-skip" id="audioGateSkip">Entra senza audio</button>
+    </div>
+  </div>
+
   <!-- HOME -->
   <main id="view-home" class="view active">
     <header class="hero">
@@ -42,26 +51,7 @@
         <p class="brand-sub">STARS</p>
       </div>
       <p class="tagline">La tua arena personale. Respira. Vince. Brilla.</p>
-      <p class="egg-hint" id="eggHint">Tocca i brawler… nascondono segreti 👀</p>
     </header>
-
-    <button type="button" class="daily-banner" id="dailyBanner" data-go="daily">
-      <span class="daily-banner-orb" aria-hidden="true">🎁</span>
-      <span class="daily-banner-text">
-        <strong id="dailyBannerTitle">Premio Quotidiano</strong>
-        <small id="dailyBannerSub">Ritira la ricompensa di oggi!</small>
-      </span>
-      <span class="daily-streak-pill" id="dailyStreakPill">🔥 0</span>
-    </button>
-
-    <section class="character-stage" id="heroStage">
-      <!-- filled by JS with real brawler portraits -->
-    </section>
-
-    <section class="brawler-rail-wrap">
-      <h2 class="rail-title">Il tuo club</h2>
-      <div class="brawler-rail" id="brawlerRail"></div>
-    </section>
 
     <nav class="home-actions">
       <button type="button" class="bs-btn bs-btn-panic" data-go="panic">
@@ -79,6 +69,26 @@
         </span>
       </button>
     </nav>
+
+    <button type="button" class="daily-banner" id="dailyBanner" data-go="daily">
+      <span class="daily-banner-orb" aria-hidden="true">🎁</span>
+      <span class="daily-banner-text">
+        <strong id="dailyBannerTitle">Premio Quotidiano</strong>
+        <small id="dailyBannerSub">Ritira la ricompensa di oggi!</small>
+      </span>
+      <span class="daily-streak-pill" id="dailyStreakPill">🔥 0</span>
+    </button>
+
+    <p class="egg-hint" id="eggHint">Tocca i brawler… nascondono segreti 👀</p>
+
+    <section class="character-stage" id="heroStage">
+      <!-- filled by JS with real brawler portraits -->
+    </section>
+
+    <section class="brawler-rail-wrap">
+      <h2 class="rail-title">Il tuo club</h2>
+      <div class="brawler-rail" id="brawlerRail"></div>
+    </section>
 
     <p class="secret-tip">Codice segreto: digita <kbd>BRAWL</kbd> o <kbd>SHOWDOWN</kbd></p>
   </main>

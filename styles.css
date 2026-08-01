@@ -189,29 +189,89 @@ button, input {
   box-shadow: 0 4px 0 var(--ink);
 }
 
+.egg-hint {
+  margin-top: 0.65rem;
+  font-weight: 800;
+  font-size: 0.88rem;
+  color: var(--ink);
+  opacity: 0.75;
+}
+
+.star-hit {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  display: grid;
+  place-items: center;
+}
+
+.star-hit.spin .star-icon {
+  animation: spinOnce 0.5s ease;
+}
+
+@keyframes spinOnce {
+  from { transform: rotate(0) scale(1); }
+  to { transform: rotate(360deg) scale(1.15); }
+}
+
+.brand {
+  cursor: pointer;
+  user-select: none;
+}
+
 .character-stage {
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  gap: clamp(0.25rem, 2vw, 1.5rem);
-  margin: 1.5rem 0 1.75rem;
-  width: min(720px, 100%);
-  min-height: 180px;
+  flex-wrap: wrap;
+  gap: clamp(0.35rem, 1.5vw, 0.9rem);
+  margin: 1.35rem 0 1rem;
+  width: min(820px, 100%);
+  min-height: 160px;
 }
 
-.brawler {
-  width: clamp(100px, 28vw, 160px);
-  filter: drop-shadow(0 8px 0 rgba(26, 16, 48, 0.2));
+.brawler-portrait {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  width: clamp(88px, 18vw, 130px);
+  padding: 0;
+  filter: drop-shadow(0 8px 0 rgba(26, 16, 48, 0.22));
+  transition: transform 0.15s ease;
 }
 
-.brawler-svg {
+.brawler-portrait img {
   width: 100%;
   height: auto;
   display: block;
+  border-radius: 18px;
+  border: 4px solid var(--ink);
+  background: linear-gradient(180deg, #fff, #ffe0f0);
+  box-shadow: 0 5px 0 var(--ink);
+}
+
+.brawler-portrait:hover {
+  transform: translateY(-6px) scale(1.04);
+}
+
+.brawler-portrait:active {
+  transform: translateY(2px) scale(0.98);
+}
+
+.brawler-name {
+  display: block;
+  margin-top: 0.35rem;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  text-align: center;
+  color: #fff;
+  -webkit-text-stroke: 2px var(--ink);
+  paint-order: stroke fill;
 }
 
 .float-a { animation: bob 2.4s ease-in-out infinite; }
-.float-b { animation: bob 2.8s ease-in-out infinite 0.4s; transform: scale(1.08); z-index: 2; }
+.float-b { animation: bobBig 2.8s ease-in-out infinite 0.4s; z-index: 2; }
 .float-c { animation: bob 2.2s ease-in-out infinite 0.8s; }
 
 @keyframes bob {
@@ -219,14 +279,83 @@ button, input {
   50% { transform: translateY(-12px); }
 }
 
-.float-b.bobbing,
-.float-b {
-  animation-name: bobBig;
-}
-
 @keyframes bobBig {
   0%, 100% { transform: translateY(0) scale(1.08); }
   50% { transform: translateY(-14px) scale(1.08); }
+}
+
+.brawler-rail-wrap {
+  width: min(820px, 100%);
+  margin-bottom: 1.25rem;
+}
+
+.rail-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: #fff;
+  -webkit-text-stroke: 2px var(--ink);
+  paint-order: stroke fill;
+  margin-bottom: 0.55rem;
+  text-align: center;
+}
+
+.brawler-rail {
+  display: flex;
+  gap: 0.55rem;
+  overflow-x: auto;
+  padding: 0.35rem 0.25rem 0.75rem;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.rail-chip {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  border: 3px solid var(--ink);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.75);
+  padding: 0.4rem 0.45rem 0.5rem;
+  cursor: pointer;
+  box-shadow: 0 4px 0 var(--ink);
+  width: 86px;
+  text-align: center;
+}
+
+.rail-chip img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto 0.2rem;
+}
+
+.rail-chip span {
+  font-weight: 900;
+  font-size: 0.68rem;
+  line-height: 1.1;
+}
+
+.rail-chip:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--ink);
+}
+
+.secret-tip {
+  margin-top: 1rem;
+  font-weight: 800;
+  font-size: 0.8rem;
+  opacity: 0.7;
+  text-align: center;
+}
+
+.secret-tip kbd {
+  background: #fff;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  padding: 0.1rem 0.35rem;
+  font-family: var(--font-body);
+  font-weight: 900;
+  font-size: 0.75rem;
 }
 
 .home-actions {
@@ -699,16 +828,46 @@ button, input {
   to { transform: none; opacity: 1; }
 }
 
-.reward-character {
+.reward-portrait,
+.mini-brawler-img {
   width: 120px;
+  height: 120px;
+  object-fit: contain;
+  display: block;
   margin: 0 auto 0.5rem;
   animation: bob 1.8s ease-in-out infinite;
+  filter: drop-shadow(0 6px 0 rgba(26, 16, 48, 0.25));
 }
 
-.reward-character svg {
-  width: 100%;
-  height: auto;
+.mini-brawler-img {
+  width: 64px;
+  height: 64px;
+  margin: 0;
+  flex-shrink: 0;
 }
+
+.rarity-tag {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 0.85rem !important;
+  letter-spacing: 0.08em;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  border: 3px solid var(--ink);
+  background: #9cf;
+  color: var(--ink);
+  margin-bottom: 0.4rem !important;
+}
+
+.rarity-tag[data-rarity="EPIC"],
+.rarity-tag[data-rarity="Epic"] { background: #d850ff; color: #fff; }
+.rarity-tag[data-rarity="MYTHIC"],
+.rarity-tag[data-rarity="Mythic"] { background: #fe5e86; color: #fff; }
+.rarity-tag[data-rarity="LEGENDARY"],
+.rarity-tag[data-rarity="Legendary"] { background: #fff11e; color: var(--ink); }
+.rarity-tag[data-rarity="RARE"],
+.rarity-tag[data-rarity="Rare"] { background: #68fdff; color: var(--ink); }
+.rarity-tag[data-rarity="COMMON"] { background: #b0e3e6; color: var(--ink); }
 
 .reward-card h3 {
   font-family: var(--font-display);
@@ -735,6 +894,21 @@ button, input {
   background: linear-gradient(180deg, #fff8e7, #ffe9a8);
 }
 
+.step-buddy {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.step-buddy img {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  border: 3px solid var(--ink);
+  background: #fff;
+}
+
 .confetti-piece {
   position: fixed;
   width: 10px;
@@ -750,6 +924,148 @@ button, input {
   100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
 }
 
+/* Toast + flash + starr drop */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 1.4rem;
+  transform: translateX(-50%) translateY(20px);
+  z-index: 80;
+  max-width: min(920px, calc(100% - 2rem));
+  background: #fff;
+  color: var(--ink);
+  border: 4px solid var(--ink);
+  border-radius: 16px;
+  padding: 0.75rem 1rem;
+  font-weight: 900;
+  box-shadow: 0 6px 0 var(--ink);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  text-align: center;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.brawl-flash {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 79, 163, 0.88);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+.brawl-flash.show {
+  opacity: 1;
+  animation: flashPulse 1.2s ease;
+}
+
+.brawl-flash img {
+  width: min(220px, 50vw);
+  filter: drop-shadow(0 10px 0 rgba(26, 16, 48, 0.35));
+}
+
+.brawl-flash p {
+  position: absolute;
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 14vw, 6rem);
+  color: #fff;
+  -webkit-text-stroke: 5px var(--ink);
+  paint-order: stroke fill;
+  text-shadow: 0 8px 0 var(--ink);
+  letter-spacing: 0.06em;
+}
+
+@keyframes flashPulse {
+  0% { transform: scale(1.08); }
+  30% { transform: scale(0.96); }
+  100% { transform: scale(1); }
+}
+
+.starr-drop {
+  text-align: center;
+  animation: rewardPop 0.5s cubic-bezier(0.2, 1.5, 0.3, 1);
+}
+
+.starr-orb {
+  width: 140px;
+  height: 140px;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  border: 6px solid var(--ink);
+  background:
+    radial-gradient(circle at 35% 30%, #fff 0%, #ff9ed2 35%, #a855f7 70%, #4c1d95 100%);
+  box-shadow: 0 10px 0 var(--ink), 0 0 40px rgba(168, 85, 247, 0.55);
+  display: grid;
+  place-items: center;
+  animation: bob 1.4s ease-in-out infinite, starrGlow 1.6s ease-in-out infinite;
+}
+
+.starr-q {
+  font-family: var(--font-display);
+  font-size: 4rem;
+  color: #fff;
+  -webkit-text-stroke: 4px var(--ink);
+  paint-order: stroke fill;
+}
+
+.starr-label {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: #fff;
+  -webkit-text-stroke: 3px var(--ink);
+  paint-order: stroke fill;
+  margin-bottom: 1rem;
+}
+
+@keyframes starrGlow {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.2); }
+}
+
+.starr-result .reward-portrait {
+  width: 140px;
+  height: 140px;
+}
+
+body.leon-invisible .brawler-portrait,
+body.leon-invisible .rail-chip {
+  opacity: 0.08;
+  transition: opacity 0.4s ease;
+}
+
+body.sandy-sleep::after {
+  content: "💤 Sandy Super… zzz";
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: rgba(80, 140, 200, 0.45);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 8vw, 3.5rem);
+  color: #fff;
+  -webkit-text-stroke: 3px var(--ink);
+  paint-order: stroke fill;
+  pointer-events: none;
+  animation: fadeIn 0.3s ease;
+}
+
+body.showdown-mode {
+  filter: saturate(1.35) contrast(1.08);
+}
+
+body.showdown-mode .sky {
+  background: radial-gradient(circle at center, transparent 20%, rgba(26, 16, 48, 0.35) 100%);
+}
+
 @media (min-width: 700px) {
   .home-actions {
     flex-direction: row;
@@ -757,7 +1073,7 @@ button, input {
   }
 
   .character-stage {
-    min-height: 220px;
+    min-height: 200px;
   }
 }
 

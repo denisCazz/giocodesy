@@ -6,6 +6,7 @@
   <title>DESY STARS</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://cdn.brawlify.com" />
   <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -17,71 +18,35 @@
     <div class="stars-layer" id="starsLayer"></div>
   </div>
 
+  <div id="toast" class="toast" hidden></div>
+  <div id="brawlFlash" class="brawl-flash" hidden>
+    <img id="brawlFlashImg" alt="" />
+    <p id="brawlFlashText">BRAWL!</p>
+  </div>
+
   <!-- HOME -->
   <main id="view-home" class="view active">
     <header class="hero">
-      <div class="brand-badge">
-        <svg class="star-icon" viewBox="0 0 64 64" aria-hidden="true">
-          <path d="M32 4 L38 24 L58 24 L42 36 L48 56 L32 44 L16 56 L22 36 L6 24 L26 24 Z" />
-        </svg>
-        <h1 class="brand">DESY</h1>
+      <div class="brand-badge" id="brandBadge" title="Tocca la stella…">
+        <button type="button" class="star-hit" id="starHit" aria-label="Stella segreta">
+          <svg class="star-icon" viewBox="0 0 64 64" aria-hidden="true">
+            <path d="M32 4 L38 24 L58 24 L42 36 L48 56 L32 44 L16 56 L22 36 L6 24 L26 24 Z" />
+          </svg>
+        </button>
+        <h1 class="brand" id="brandTitle">DESY</h1>
         <p class="brand-sub">STARS</p>
       </div>
       <p class="tagline">La tua arena personale. Respira. Vince. Brilla.</p>
+      <p class="egg-hint" id="eggHint">Tocca i brawler… nascondono segreti 👀</p>
     </header>
 
-    <section class="character-stage" aria-hidden="true">
-      <div class="brawler pinky float-a">
-        <svg viewBox="0 0 160 180" class="brawler-svg">
-          <ellipse cx="80" cy="168" rx="42" ry="8" fill="rgba(0,0,0,.25)"/>
-          <path d="M45 95 Q40 145 55 160 L105 160 Q120 145 115 95 Z" fill="#ff4fa3"/>
-          <path d="M45 95 Q40 145 55 160 L105 160 Q120 145 115 95 Z" fill="none" stroke="#1a1030" stroke-width="5"/>
-          <circle cx="80" cy="72" r="48" fill="#ffb6d9"/>
-          <circle cx="80" cy="72" r="48" fill="none" stroke="#1a1030" stroke-width="5"/>
-          <ellipse cx="62" cy="70" rx="12" ry="16" fill="#fff"/>
-          <ellipse cx="98" cy="70" rx="12" ry="16" fill="#fff"/>
-          <circle cx="64" cy="72" r="6" fill="#1a1030"/>
-          <circle cx="100" cy="72" r="6" fill="#1a1030"/>
-          <path d="M68 92 Q80 102 92 92" fill="none" stroke="#1a1030" stroke-width="4" stroke-linecap="round"/>
-          <path d="M48 48 Q55 28 72 38" fill="none" stroke="#ff2d87" stroke-width="8" stroke-linecap="round"/>
-          <path d="M112 48 Q105 28 88 38" fill="none" stroke="#ff2d87" stroke-width="8" stroke-linecap="round"/>
-          <circle cx="118" cy="88" r="10" fill="#ff5eb0"/>
-          <circle cx="42" cy="88" r="10" fill="#ff5eb0"/>
-        </svg>
-      </div>
-      <div class="brawler shelly float-b">
-        <svg viewBox="0 0 160 180" class="brawler-svg">
-          <ellipse cx="80" cy="168" rx="42" ry="8" fill="rgba(0,0,0,.25)"/>
-          <path d="M48 100 Q44 148 58 162 L102 162 Q116 148 112 100 Z" fill="#ffd54a"/>
-          <path d="M48 100 Q44 148 58 162 L102 162 Q116 148 112 100 Z" fill="none" stroke="#1a1030" stroke-width="5"/>
-          <circle cx="80" cy="74" r="46" fill="#ffcc80"/>
-          <circle cx="80" cy="74" r="46" fill="none" stroke="#1a1030" stroke-width="5"/>
-          <path d="M40 58 Q80 20 120 58" fill="#5d4037" stroke="#1a1030" stroke-width="4"/>
-          <ellipse cx="64" cy="76" rx="11" ry="14" fill="#fff"/>
-          <ellipse cx="96" cy="76" rx="11" ry="14" fill="#fff"/>
-          <circle cx="66" cy="78" r="5.5" fill="#1a1030"/>
-          <circle cx="98" cy="78" r="5.5" fill="#1a1030"/>
-          <path d="M70 96 Q80 104 90 96" fill="none" stroke="#1a1030" stroke-width="4" stroke-linecap="round"/>
-          <rect x="108" y="98" width="28" height="14" rx="4" fill="#8d6e63" stroke="#1a1030" stroke-width="3"/>
-        </svg>
-      </div>
-      <div class="brawler spike float-c">
-        <svg viewBox="0 0 160 180" class="brawler-svg">
-          <ellipse cx="80" cy="168" rx="42" ry="8" fill="rgba(0,0,0,.25)"/>
-          <circle cx="80" cy="95" r="52" fill="#7cfc00"/>
-          <circle cx="80" cy="95" r="52" fill="none" stroke="#1a1030" stroke-width="5"/>
-          <polygon points="80,20 92,55 68,55" fill="#57c100" stroke="#1a1030" stroke-width="3"/>
-          <polygon points="30,55 58,70 42,88" fill="#57c100" stroke="#1a1030" stroke-width="3"/>
-          <polygon points="130,55 102,70 118,88" fill="#57c100" stroke="#1a1030" stroke-width="3"/>
-          <polygon points="40,130 62,112 70,135" fill="#57c100" stroke="#1a1030" stroke-width="3"/>
-          <polygon points="120,130 98,112 90,135" fill="#57c100" stroke="#1a1030" stroke-width="3"/>
-          <ellipse cx="64" cy="92" rx="10" ry="14" fill="#1a1030"/>
-          <ellipse cx="96" cy="92" rx="10" ry="14" fill="#1a1030"/>
-          <circle cx="67" cy="88" r="3" fill="#fff"/>
-          <circle cx="99" cy="88" r="3" fill="#fff"/>
-          <path d="M70 112 Q80 120 90 112" fill="none" stroke="#1a1030" stroke-width="4" stroke-linecap="round"/>
-        </svg>
-      </div>
+    <section class="character-stage" id="heroStage">
+      <!-- filled by JS with real brawler portraits -->
+    </section>
+
+    <section class="brawler-rail-wrap">
+      <h2 class="rail-title">Il tuo club</h2>
+      <div class="brawler-rail" id="brawlerRail"></div>
     </section>
 
     <nav class="home-actions">
@@ -100,6 +65,8 @@
         </span>
       </button>
     </nav>
+
+    <p class="secret-tip">Codice segreto: digita <kbd>BRAWL</kbd> o <kbd>SHOWDOWN</kbd></p>
   </main>
 
   <!-- PANIC GUIDE -->
@@ -107,12 +74,10 @@
     <div class="panel panic-panel">
       <button type="button" class="back-btn" data-go="home" aria-label="Torna alla home">←</button>
       <div class="panel-head">
-        <div class="mini-brawler" aria-hidden="true">
-          <svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#ffb6d9" stroke="#1a1030" stroke-width="4"/><ellipse cx="30" cy="38" rx="7" ry="10" fill="#fff"/><ellipse cx="50" cy="38" rx="7" ry="10" fill="#fff"/><circle cx="32" cy="40" r="3.5" fill="#1a1030"/><circle cx="52" cy="40" r="3.5" fill="#1a1030"/><path d="M32 52 Q40 58 48 52" fill="none" stroke="#1a1030" stroke-width="3" stroke-linecap="round"/></svg>
-        </div>
+        <img class="mini-brawler-img" id="panicBuddyImg" src="https://cdn.brawlify.com/brawlers/borders/16000015.png" alt="Piper" width="64" height="64" />
         <div>
           <h2>Modalità Calma</h2>
-          <p class="panel-sub">Sei al sicuro. Andiamo insieme, un passo alla volta.</p>
+          <p class="panel-sub" id="panicBuddyLine">Piper ti accompagna. Un passo alla volta.</p>
         </div>
       </div>
 
@@ -121,9 +86,7 @@
       </div>
       <p class="step-counter" id="panicCounter">Passo 1 di 6</p>
 
-      <div class="step-card" id="panicStep">
-        <!-- filled by JS -->
-      </div>
+      <div class="step-card" id="panicStep"></div>
 
       <div class="step-actions">
         <button type="button" class="bs-btn bs-btn-ghost" id="panicPrev" hidden>Indietro</button>
@@ -137,12 +100,10 @@
     <div class="panel goals-panel">
       <button type="button" class="back-btn" data-go="home" aria-label="Torna alla home">←</button>
       <div class="panel-head">
-        <div class="mini-brawler" aria-hidden="true">
-          <svg viewBox="0 0 80 80"><circle cx="40" cy="42" r="30" fill="#7cfc00" stroke="#1a1030" stroke-width="4"/><polygon points="40,8 46,28 34,28" fill="#57c100" stroke="#1a1030" stroke-width="2"/><ellipse cx="32" cy="40" rx="6" ry="9" fill="#1a1030"/><ellipse cx="48" cy="40" rx="6" ry="9" fill="#1a1030"/><circle cx="34" cy="37" r="2" fill="#fff"/><circle cx="50" cy="37" r="2" fill="#fff"/></svg>
-        </div>
+        <img class="mini-brawler-img" src="https://cdn.brawlify.com/brawlers/borders/16000005.png" alt="Spike" width="64" height="64" />
         <div>
           <h2>Arena Obiettivi</h2>
-          <p class="panel-sub">Segna le vittorie. Ogni obiettivo completato = premio!</p>
+          <p class="panel-sub">Completa = Starr Drop style! (prova a scrivere <em>3v3</em>)</p>
         </div>
       </div>
 
@@ -171,22 +132,12 @@
     </div>
   </section>
 
-  <!-- REWARD OVERLAY -->
+  <!-- REWARD / STARR DROP -->
   <div id="rewardOverlay" class="overlay" hidden>
     <div class="reward-burst" aria-hidden="true"></div>
     <div class="reward-card">
-      <div class="reward-character" aria-hidden="true">
-        <svg viewBox="0 0 160 160">
-          <circle cx="80" cy="80" r="58" fill="#ffb6d9" stroke="#1a1030" stroke-width="5"/>
-          <ellipse cx="62" cy="76" rx="12" ry="16" fill="#fff"/>
-          <ellipse cx="98" cy="76" rx="12" ry="16" fill="#fff"/>
-          <circle cx="64" cy="78" r="6" fill="#1a1030"/>
-          <circle cx="100" cy="78" r="6" fill="#1a1030"/>
-          <path d="M66 98 Q80 112 94 98" fill="none" stroke="#1a1030" stroke-width="5" stroke-linecap="round"/>
-          <path d="M48 52 Q40 30 58 38" fill="none" stroke="#ff2d87" stroke-width="8" stroke-linecap="round"/>
-          <path d="M112 52 Q120 30 102 38" fill="none" stroke="#ff2d87" stroke-width="8" stroke-linecap="round"/>
-        </svg>
-      </div>
+      <img class="reward-portrait" id="rewardImg" src="https://cdn.brawlify.com/brawlers/borders/16000000.png" alt="" width="120" height="120" />
+      <p class="rarity-tag" id="rewardRarity">RARE</p>
       <h3 id="rewardTitle">VITTORIA!</h3>
       <p id="rewardText">Hai completato un obiettivo!</p>
       <p class="reward-prize" id="rewardPrize">+1 ⭐ Stella Rosa</p>
@@ -194,22 +145,31 @@
     </div>
   </div>
 
-  <!-- PANIC DONE OVERLAY -->
+  <!-- PANIC DONE -->
   <div id="calmOverlay" class="overlay" hidden>
     <div class="reward-card calm-card">
-      <div class="reward-character" aria-hidden="true">
-        <svg viewBox="0 0 160 160">
-          <circle cx="80" cy="80" r="58" fill="#ffd54a" stroke="#1a1030" stroke-width="5"/>
-          <ellipse cx="62" cy="76" rx="12" ry="16" fill="#fff"/>
-          <ellipse cx="98" cy="76" rx="12" ry="16" fill="#fff"/>
-          <circle cx="64" cy="78" r="6" fill="#1a1030"/>
-          <circle cx="100" cy="78" r="6" fill="#1a1030"/>
-          <path d="M66 98 Q80 110 94 98" fill="none" stroke="#1a1030" stroke-width="5" stroke-linecap="round"/>
-        </svg>
-      </div>
+      <img class="reward-portrait" src="https://cdn.brawlify.com/brawlers/borders/16000015.png" alt="Piper" width="120" height="120" />
       <h3>Ce l'hai fatta</h3>
-      <p>Hai seguito tutta la guida. Sei una vera star. Respira ancora un po' e torna quando vuoi.</p>
+      <p>Come dice Piper: mira al cuore… della calma. Sei una vera star.</p>
       <button type="button" class="bs-btn bs-btn-pink" id="calmClose">Torna all'arena</button>
+    </div>
+  </div>
+
+  <!-- STARR DROP EASTER EGG -->
+  <div id="starrOverlay" class="overlay" hidden>
+    <div class="starr-drop" id="starrDrop">
+      <div class="starr-orb">
+        <span class="starr-q">?</span>
+      </div>
+      <p class="starr-label">STARR DROP</p>
+      <button type="button" class="bs-btn bs-btn-gold" id="starrOpen">APRILA!</button>
+    </div>
+    <div class="reward-card starr-result" id="starrResult" hidden>
+      <img class="reward-portrait" id="starrResultImg" alt="" width="140" height="140" />
+      <p class="rarity-tag" id="starrResultRarity">MYTHIC</p>
+      <h3 id="starrResultTitle">NUOVO BRAWLER!</h3>
+      <p id="starrResultText"></p>
+      <button type="button" class="bs-btn bs-btn-pink" id="starrClose">YEAH!</button>
     </div>
   </div>
 

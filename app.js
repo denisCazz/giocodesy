@@ -504,12 +504,16 @@
     if (name === "panic") {
       panicIndex = 0;
       renderPanicStep();
-      // soft pause lobby vibe during calm
       if (window.DesyMusic && DesyMusic.isPlaying()) {
         DesyMusic.stop();
         updateMusicFab(false);
         showToast("Musica in pausa per la calma 💗");
       }
+    }
+    if (name === "home" && localStorage.getItem(MUSIC_KEY) === "1" && window.DesyMusic && !DesyMusic.isPlaying()) {
+      DesyMusic.play().then((ok) => {
+        if (ok) updateMusicFab(true);
+      });
     }
     if (name === "goals") renderGoals();
     if (name === "daily") renderDaily();

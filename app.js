@@ -637,7 +637,10 @@
     const days = [1, 2, 3, 4, 5, 6, 7];
     els.dailyGrid.innerHTML = days
       .map((d) => {
-        const done = (st.claimedDays || []).includes(d) || (!claimedToday && d < cycleDay);
+        const done =
+          !!st.weekComplete ||
+          (st.claimedDays || []).includes(d) ||
+          (!claimedToday && d < cycleDay);
         const isToday = !claimedToday && d === cycleDay;
         return `<div class="daily-cell ${done ? "done" : ""} ${isToday ? "today" : ""}">
           <span class="daily-day">Giorno ${d}</span>

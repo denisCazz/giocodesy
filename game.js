@@ -1,17 +1,25 @@
 /* Desy Stars — game progression engine */
 window.DesyGame = (() => {
   const KEY = "desy-stars-game-v3";
+  const FRESH_FLAG = "desy-stars-fresh-boot-1";
   const LEGACY_KEYS = [
     "desy-stars-game-v2",
+    "desy-stars-game-v3",
     "desy-stars-goals-v1",
+    "desy-stars-goals-v3",
     "desy-stars-eggs-v1",
+    "desy-stars-eggs-v3",
     "desy-stars-daily-v1",
     "desy-stars-music-v1",
+    "desy-stars-music-v3",
   ];
 
-  // Fresh install: drop old saves once
+  // One-shot wipe so this build opens as a true first access
   try {
-    LEGACY_KEYS.forEach((k) => localStorage.removeItem(k));
+    if (!localStorage.getItem(FRESH_FLAG)) {
+      LEGACY_KEYS.forEach((k) => localStorage.removeItem(k));
+      localStorage.setItem(FRESH_FLAG, "1");
+    }
   } catch {
     /* ignore */
   }

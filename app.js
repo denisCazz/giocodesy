@@ -36,6 +36,19 @@
     { title: "SKIN ROSA!", prize: "+1 🎀 Skin Pink Piper", text: "Outfit da diva dell'arena!", rarity: "EPIC", brawler: "piper" },
   ];
 
+  const DAILY_REWARDS = [
+    { day: 1, title: "Monete", prize: "+100 🪙 Coins", text: "Warm-up reward del giorno 1!", rarity: "COMMON", brawler: "shelly", emoji: "🪙" },
+    { day: 2, title: "Power Points", prize: "+50 ⚡ PP", text: "Il tuo brawler sale di potenza!", rarity: "RARE", brawler: "colt", emoji: "⚡" },
+    { day: 3, title: "Starr Drop", prize: "+1 🎁 Starr Drop", text: "Giorno 3: drop rosa speciale!", rarity: "EPIC", brawler: "piper", emoji: "🎁" },
+    { day: 4, title: "Gemme", prize: "+20 💎 Gems", text: "Luccichio da campionessa!", rarity: "EPIC", brawler: "tara", emoji: "💎" },
+    { day: 5, title: "Mega Box", prize: "+1 📦 Mega Box", text: "Nostalgia box day!", rarity: "MYTHIC", brawler: "primo", emoji: "📦" },
+    { day: 6, title: "Pin Doubles", prize: "+2 📌 Pins", text: "Pin party con Spike & Crow!", rarity: "MYTHIC", brawler: "crow", emoji: "📌" },
+    { day: 7, title: "JACKPOT!", prize: "+1 👑 Skin Legendary Rosa", text: "Giorno 7: jackpot Desy Stars!", rarity: "LEGENDARY", brawler: "melodie", emoji: "👑" },
+  ];
+
+  const DAILY_KEY = "desy-stars-daily-v1";
+  const MUSIC_KEY = "desy-stars-music-v1";
+
   const PANIC_STEPS = [
     {
       emoji: "🛑",
@@ -97,6 +110,7 @@
       home: document.getElementById("view-home"),
       panic: document.getElementById("view-panic"),
       goals: document.getElementById("view-goals"),
+      daily: document.getElementById("view-daily"),
     },
     heroStage: document.getElementById("heroStage"),
     brawlerRail: document.getElementById("brawlerRail"),
@@ -139,16 +153,191 @@
     starrResultTitle: document.getElementById("starrResultTitle"),
     starrResultText: document.getElementById("starrResultText"),
     starrClose: document.getElementById("starrClose"),
+    musicFab: document.getElementById("musicFab"),
+    musicLabel: document.getElementById("musicLabel"),
+    dailyBanner: document.getElementById("dailyBanner"),
+    dailyBannerTitle: document.getElementById("dailyBannerTitle"),
+    dailyBannerSub: document.getElementById("dailyBannerSub"),
+    dailyStreakPill: document.getElementById("dailyStreakPill"),
+    dailyGrid: document.getElementById("dailyGrid"),
+    dailyClaimBtn: document.getElementById("dailyClaimBtn"),
+    dailyNote: document.getElementById("dailyNote"),
+    dailyStreakCount: document.getElementById("dailyStreakCount"),
+    dailyDayNum: document.getElementById("dailyDayNum"),
+    dailyTotalClaims: document.getElementById("dailyTotalClaims"),
   };
 
   let panicIndex = 0;
   let goals = loadGoals();
   let eggs = loadEggs();
+  let daily = loadDaily();
   let starClicks = 0;
   let brandClicks = 0;
   let typedBuffer = "";
   let toastTimer = null;
   const clickMap = {};
+
+  function todayKey() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  }
+
+  function yesterdayKey() {
+    const d = new Date();
+    d.setDate(d.getDate() - 1);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  }
+
+  function loadDaily() {
+    try {
+      const raw = localStorage.getItem(DAILY_KEY);
+      if (!raw) return { lastClaim: null, streak: 0, cycleDay: 1, total: 0, claimedDays: [] };
+      return JSON.parse(raw);
+    } catch {
+      return { lastClaim: null, streak: 0, cycleDay: 1, total: 0, claimedDays: [] };
+    }
+  }
+
+  function saveDaily() {
+    localStorage.setItem(DAILY_KEY, JSON.stringify(daily));
+  }
+
+  function syncDailyStreak() {
+    const today = todayKey();
+    if (daily.lastClaim === today) return;
+    if (daily.weekComplete) {
+      daily.claimedDays = [];
+      daily.weekComplete = false;
+      daily.cycleDay = 1;
+    }
+    if (daily.lastClaim && daily.lastClaim !== yesterdayKey()) {
+      daily.streak = 0;
+      daily.cycleDay = 1;
+      daily.claimedDays = [];
+      daily.weekComplete = false;
+    }
+    saveDaily();
+  }
+
+  function canClaimDaily() {
+    return daily.lastClaim !== todayKey();
+  }
+
+  function currentDailyReward() {
+    const idx = Math.max(0, Math.min(6, (daily.cycleDay || 1) - 1));
+    return DAILY_REWARDS[idx];
+  }
+
+  function updateDailyBanner() {
+    syncDailyStreak();
+    const reward = currentDailyReward();
+    els.dailyStreakPill.textContent = `🔥 ${daily.streak || 0}`;
+    if (canClaimDaily()) {
+      els.dailyBanner.classList.remove("claimed");
+      els.dailyBannerTitle.textContent = "Premio Quotidiano";
+      els.dailyBannerSub.textContent = `Giorno ${reward.day}: ${reward.title} pronto!`;
+    } else {
+      els.dailyBanner.classList.add("claimed");
+      els.dailyBannerTitle.textContent = "Premio ritirato!";
+      els.dailyBannerSub.textContent = "Torna domani per il prossimo drop 💫";
+    }
+  }
+
+  function renderDaily() {
+    syncDailyStreak();
+    const today = todayKey();
+    const claimedToday = daily.lastClaim === today;
+    const cycleDay = daily.cycleDay || 1;
+
+    els.dailyStreakCount.textContent = String(daily.streak || 0);
+    els.dailyDayNum.textContent = String(
+      claimedToday ? daily.lastClaimedDay || 1 : cycleDay
+    );
+    els.dailyTotalClaims.textContent = String(daily.total || 0);
+
+    els.dailyGrid.innerHTML = DAILY_REWARDS.map((r) => {
+      const done =
+        (daily.claimedDays || []).includes(r.day) ||
+        (!daily.weekComplete && r.day < cycleDay);
+      const isToday = !claimedToday && r.day === cycleDay;
+      return `
+        <div class="daily-cell ${done ? "done" : ""} ${isToday ? "today" : ""}" data-day="${r.day}">
+          <span class="daily-day">Giorno ${r.day}</span>
+          <span class="daily-emoji">${r.emoji}</span>
+          <span class="daily-cell-title">${r.title}</span>
+          ${done ? '<span class="daily-check">✓</span>' : ""}
+          ${isToday ? '<span class="daily-now">OGGI</span>' : ""}
+        </div>`;
+    }).join("");
+
+    if (claimedToday) {
+      els.dailyClaimBtn.disabled = true;
+      els.dailyClaimBtn.textContent = "Già ritirato oggi ✓";
+      els.dailyNote.textContent = "Streak salvato! Torna domani per il giorno successivo.";
+    } else {
+      els.dailyClaimBtn.disabled = false;
+      const reward = currentDailyReward();
+      els.dailyClaimBtn.textContent = `Ritira: ${reward.emoji} ${reward.title}`;
+      els.dailyNote.textContent = "Un premio al giorno. Se salti un giorno, lo streak riparte.";
+    }
+  }
+
+  function claimDaily() {
+    if (!canClaimDaily()) {
+      showToast("Hai già ritirato il premio di oggi!");
+      return;
+    }
+    syncDailyStreak();
+    const reward = currentDailyReward();
+    const dayNum = reward.day;
+
+    daily.lastClaim = todayKey();
+    daily.streak = (daily.streak || 0) + 1;
+    daily.total = (daily.total || 0) + 1;
+    daily.lastClaimedDay = dayNum;
+    daily.claimedDays = [...(daily.claimedDays || []).filter((d) => d < dayNum), dayNum];
+
+    if (dayNum >= 7) {
+      daily.cycleDay = 1;
+      daily.weekComplete = true;
+    } else {
+      daily.cycleDay = dayNum + 1;
+      daily.weekComplete = false;
+    }
+    saveDaily();
+
+    if (window.DesyMusic) DesyMusic.fanfare();
+    showDailyReward(reward);
+    updateDailyBanner();
+    renderDaily();
+  }
+
+  function showDailyReward(reward) {
+    const b = BRAWLERS[reward.brawler];
+    els.rewardTitle.textContent = `GIORNO ${reward.day}!`;
+    els.rewardText.textContent = reward.text;
+    els.rewardPrize.textContent = reward.prize;
+    els.rewardRarity.textContent = reward.rarity;
+    els.rewardRarity.dataset.rarity = reward.rarity;
+    els.rewardImg.src = img(b.id);
+    els.rewardImg.alt = b.name;
+    els.rewardOverlay.hidden = false;
+    burstConfetti(["#ff4fa3", "#ffd54a", "#a855f7", "#fff", "#7cfc00", "#4da3ff"]);
+  }
+
+  function updateMusicFab(on) {
+    els.musicFab.classList.toggle("playing", on);
+    els.musicFab.setAttribute("aria-pressed", on ? "true" : "false");
+    els.musicLabel.textContent = on ? "ON" : "PLAY";
+  }
+
+  function toggleMusic() {
+    if (!window.DesyMusic) return;
+    const on = DesyMusic.toggle();
+    localStorage.setItem(MUSIC_KEY, on ? "1" : "0");
+    updateMusicFab(on);
+    showToast(on ? "Lobby theme ON 🎵" : "Musica in pausa");
+  }
 
   function loadGoals() {
     try {
@@ -274,8 +463,15 @@
     if (name === "panic") {
       panicIndex = 0;
       renderPanicStep();
+      // soft pause lobby vibe during calm
+      if (window.DesyMusic && DesyMusic.isPlaying()) {
+        DesyMusic.stop();
+        updateMusicFab(false);
+        showToast("Musica in pausa per la calma 💗");
+      }
     }
     if (name === "goals") renderGoals();
+    if (name === "daily") renderDaily();
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -407,6 +603,7 @@
     els.rewardImg.src = img(b.id);
     els.rewardImg.alt = b.name;
     els.rewardOverlay.hidden = false;
+    if (window.DesyMusic) DesyMusic.fanfare();
     burstConfetti(["#ff4fa3", "#ffd54a", "#ff9ed2", "#7cfc00", "#4da3ff", "#fff"]);
   }
 
@@ -565,6 +762,9 @@
     els.starrOverlay.hidden = true;
   });
 
+  els.musicFab.addEventListener("click", toggleMusic);
+  els.dailyClaimBtn.addEventListener("click", claimDaily);
+
   window.addEventListener("keydown", (e) => {
     if (e.metaKey || e.ctrlKey || e.altKey) return;
     handleSecretCode(e.key);
@@ -592,10 +792,23 @@
   renderRail();
   spawnSkyStars();
   renderGoals();
+  updateDailyBanner();
+
+  // Music needs a user gesture in most browsers — FAB handles start.
+  // If previously ON, nudge user.
+  if (localStorage.getItem(MUSIC_KEY) === "1") {
+    els.musicLabel.textContent = "PLAY";
+    setTimeout(() => showToast("Tocca 🎵 per la musichetta lobby!"), 1200);
+  }
 
   if (!eggs.welcome) {
     setTimeout(() => showToast("Benvenuta nell'arena, Desy 💗"), 600);
     eggs.welcome = true;
     saveEggs();
+  }
+
+  // Pulse daily banner if unclaimed
+  if (canClaimDaily()) {
+    els.dailyBanner.classList.add("pulse");
   }
 })();

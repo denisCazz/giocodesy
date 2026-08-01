@@ -24,6 +24,11 @@
     <p id="brawlFlashText">BRAWL!</p>
   </div>
 
+  <button type="button" class="music-fab" id="musicFab" aria-label="Musica lobby" aria-pressed="false">
+    <span class="music-icon" aria-hidden="true">🎵</span>
+    <span class="music-label" id="musicLabel">PLAY</span>
+  </button>
+
   <!-- HOME -->
   <main id="view-home" class="view active">
     <header class="hero">
@@ -39,6 +44,15 @@
       <p class="tagline">La tua arena personale. Respira. Vince. Brilla.</p>
       <p class="egg-hint" id="eggHint">Tocca i brawler… nascondono segreti 👀</p>
     </header>
+
+    <button type="button" class="daily-banner" id="dailyBanner" data-go="daily">
+      <span class="daily-banner-orb" aria-hidden="true">🎁</span>
+      <span class="daily-banner-text">
+        <strong id="dailyBannerTitle">Premio Quotidiano</strong>
+        <small id="dailyBannerSub">Ritira la ricompensa di oggi!</small>
+      </span>
+      <span class="daily-streak-pill" id="dailyStreakPill">🔥 0</span>
+    </button>
 
     <section class="character-stage" id="heroStage">
       <!-- filled by JS with real brawler portraits -->
@@ -68,6 +82,42 @@
 
     <p class="secret-tip">Codice segreto: digita <kbd>BRAWL</kbd> o <kbd>SHOWDOWN</kbd></p>
   </main>
+
+  <!-- DAILY REWARDS -->
+  <section id="view-daily" class="view">
+    <div class="panel daily-panel">
+      <button type="button" class="back-btn" data-go="home" aria-label="Torna alla home">←</button>
+      <div class="panel-head">
+        <img class="mini-brawler-img" src="https://cdn.brawlify.com/brawlers/borders/16000049.png" alt="Janet" width="64" height="64" />
+        <div>
+          <h2>Login Giornaliero</h2>
+          <p class="panel-sub">7 giorni di premi. Non perdere lo streak!</p>
+        </div>
+      </div>
+
+      <div class="trophy-bar daily-stats">
+        <div class="trophy-stat">
+          <span class="trophy-label">Streak</span>
+          <strong id="dailyStreakCount">0</strong>
+        </div>
+        <div class="trophy-stat">
+          <span class="trophy-label">Giorno</span>
+          <strong id="dailyDayNum">1</strong>
+        </div>
+        <div class="trophy-stat">
+          <span class="trophy-label">Ritirati</span>
+          <strong id="dailyTotalClaims">0</strong>
+        </div>
+      </div>
+
+      <div class="daily-grid" id="dailyGrid"></div>
+
+      <button type="button" class="bs-btn bs-btn-gold" id="dailyClaimBtn">
+        Ritira premio di oggi!
+      </button>
+      <p class="daily-note" id="dailyNote">Torna ogni giorno per premi sempre più grossi.</p>
+    </div>
+  </section>
 
   <!-- PANIC GUIDE -->
   <section id="view-panic" class="view">
@@ -173,6 +223,7 @@
     </div>
   </div>
 
+  <script src="music.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

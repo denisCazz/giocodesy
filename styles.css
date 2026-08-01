@@ -1090,3 +1090,198 @@ body.showdown-mode .sky {
     flex-direction: column;
   }
 }
+
+/* Music FAB */
+.music-fab {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffe27a, var(--gold));
+  padding: 0.55rem 0.85rem;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 5px 0 var(--ink);
+  color: var(--ink);
+}
+
+.music-fab.playing {
+  background: linear-gradient(180deg, #ff7ec8, var(--pink));
+  color: #fff;
+  animation: musicPulse 0.8s ease-in-out infinite;
+}
+
+.music-fab:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 var(--ink);
+}
+
+.music-icon {
+  font-size: 1.1rem;
+}
+
+.music-label {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+}
+
+@keyframes musicPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* Daily banner + grid */
+.daily-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: min(520px, 100%);
+  margin: 1rem 0 0.25rem;
+  border: 4px solid var(--ink);
+  border-radius: 20px;
+  padding: 0.75rem 0.9rem;
+  cursor: pointer;
+  text-align: left;
+  background: linear-gradient(135deg, #fff7fb 0%, #ffe0f0 45%, #ffe27a 100%);
+  box-shadow: 0 6px 0 var(--ink);
+  color: var(--ink);
+}
+
+.daily-banner.pulse {
+  animation: bannerPulse 1.6s ease-in-out infinite;
+}
+
+.daily-banner.claimed {
+  opacity: 0.88;
+  background: linear-gradient(135deg, #e8ffe0, #fff7fb);
+  animation: none;
+}
+
+@keyframes bannerPulse {
+  0%, 100% { transform: translateY(0); box-shadow: 0 6px 0 var(--ink); }
+  50% { transform: translateY(-3px); box-shadow: 0 9px 0 var(--ink); }
+}
+
+.daily-banner-orb {
+  font-size: 1.8rem;
+  filter: drop-shadow(0 2px 0 rgba(0,0,0,0.2));
+}
+
+.daily-banner-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.daily-banner-text strong {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: var(--pink-deep);
+}
+
+.daily-banner-text small {
+  font-weight: 800;
+  font-size: 0.82rem;
+  opacity: 0.85;
+}
+
+.daily-streak-pill {
+  flex-shrink: 0;
+  background: #fff;
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+  padding: 0.35rem 0.55rem;
+  font-weight: 900;
+  font-size: 0.85rem;
+  box-shadow: 0 3px 0 var(--ink);
+}
+
+.daily-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 0.55rem;
+  margin-bottom: 1rem;
+}
+
+.daily-cell {
+  position: relative;
+  background: #fff;
+  border: 3px solid var(--ink);
+  border-radius: 16px;
+  padding: 0.65rem 0.4rem;
+  text-align: center;
+  box-shadow: 0 4px 0 var(--ink);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  min-height: 110px;
+}
+
+.daily-cell.today {
+  background: linear-gradient(180deg, #ffe27a, #ffb6d9);
+  transform: scale(1.04);
+  z-index: 1;
+}
+
+.daily-cell.done {
+  background: #e8ffe0;
+  opacity: 0.9;
+}
+
+.daily-day {
+  font-size: 0.68rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.daily-emoji {
+  font-size: 1.55rem;
+  line-height: 1;
+}
+
+.daily-cell-title {
+  font-weight: 900;
+  font-size: 0.72rem;
+  line-height: 1.15;
+}
+
+.daily-check {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-weight: 900;
+  color: #57c100;
+}
+
+.daily-now {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  color: var(--pink-deep);
+  letter-spacing: 0.04em;
+}
+
+.daily-note {
+  margin-top: 0.75rem;
+  text-align: center;
+  font-weight: 800;
+  font-size: 0.85rem;
+  opacity: 0.75;
+}
+
+#dailyClaimBtn:disabled {
+  opacity: 0.65;
+  cursor: default;
+  transform: none;
+  box-shadow: 0 4px 0 var(--ink);
+}

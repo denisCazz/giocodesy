@@ -1,916 +1,218 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>💝 Per Te, Desy 💝</title>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Quicksand:wght@300;400;500&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            min-height: 100vh;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            font-family: 'Quicksand', sans-serif;
-            overflow-x: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .hearts-bg {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            overflow: hidden;
-            z-index: 0;
-        }
-
-        .floating-heart {
-            position: absolute;
-            color: rgba(255, 105, 135, 0.3);
-            animation: float-up 15s infinite;
-            font-size: 20px;
-        }
-
-        @keyframes float-up {
-            0% {
-                transform: translateY(100vh) rotate(0deg);
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-100vh) rotate(720deg);
-                opacity: 0;
-            }
-        }
-
-        .container {
-            position: relative;
-            z-index: 1;
-            text-align: center;
-            padding: 20px;
-            max-width: 600px;
-            width: 100%;
-        }
-
-        .step {
-            display: none;
-            animation: fadeIn 1s ease-out;
-        }
-
-        .step.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.1);
-            }
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px) rotate(-5deg); }
-            75% { transform: translateX(10px) rotate(5deg); }
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-
-        .title {
-            font-family: 'Dancing Script', cursive;
-            font-size: 3.5rem;
-            color: #ff6b8a;
-            text-shadow: 0 0 30px rgba(255, 107, 138, 0.5);
-            margin-bottom: 30px;
-        }
-
-        .title.animated {
-            animation: pulse 2s infinite;
-        }
-
-        .subtitle {
-            font-size: 1.2rem;
-            color: #e0e0e0;
-            margin-bottom: 40px;
-            line-height: 1.8;
-        }
-
-        .message-box {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 40px;
-            margin: 20px 0;
-            border: 1px solid rgba(255, 107, 138, 0.3);
-            box-shadow: 0 8px 32px rgba(255, 107, 138, 0.2);
-        }
-
-        .message {
-            font-size: 1.4rem;
-            color: #fff;
-            line-height: 1.8;
-            margin-bottom: 30px;
-        }
-
-        .highlight {
-            color: #ff6b8a;
-            font-weight: 700;
-            font-size: 1.6rem;
-        }
-
-        .btn {
-            background: linear-gradient(135deg, #ff6b8a 0%, #ff8e9e 100%);
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 1.1rem;
-            font-family: 'Quicksand', sans-serif;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin: 10px;
-            box-shadow: 0 4px 15px rgba(255, 107, 138, 0.4);
-        }
-
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 25px rgba(255, 107, 138, 0.6);
-        }
-
-        .btn-choice {
-            display: block;
-            width: 100%;
-            margin: 15px 0;
-            padding: 20px;
-            font-size: 1.2rem;
-        }
-
-        .btn-choice:hover {
-            transform: scale(1.02);
-        }
-
-        .emoji-big {
-            font-size: 4rem;
-            margin: 20px 0;
-        }
-
-        .emoji-big.animated {
-            animation: bounce 1s infinite;
-        }
-
-        .choice-container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 30px;
-        }
-
-        /* Scratch card styles */
-        .scratch-container {
-            position: relative;
-            width: 300px;
-            height: 150px;
-            margin: 30px auto;
-            border-radius: 15px;
-            overflow: hidden;
-            cursor: crosshair;
-            touch-action: none;
-            -webkit-user-select: none;
-            user-select: none;
-        }
-
-        .scratch-content {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #ff6b8a, #ff8e9e);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.5rem;
-            color: white;
-            font-weight: bold;
-        }
-
-        .scratch-container canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            touch-action: none;
-            border-radius: 15px;
-        }
-
-        /* Slot machine styles */
-        .slot-machine {
-            background: linear-gradient(180deg, #2a2a4a, #1a1a3a);
-            border-radius: 20px;
-            padding: 30px;
-            margin: 20px auto;
-            max-width: 350px;
-            border: 3px solid #ff6b8a;
-            box-shadow: 0 0 30px rgba(255, 107, 138, 0.3);
-        }
-
-        .slot-display {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .slot-window {
-            width: 80px;
-            height: 80px;
-            background: #fff;
-            border-radius: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2.5rem;
-            overflow: hidden;
-            border: 3px solid #333;
-        }
-
-        .slot-window.spinning {
-            animation: slotSpin 0.1s infinite;
-        }
-
-        @keyframes slotSpin {
-            0% { transform: translateY(-5px); }
-            50% { transform: translateY(5px); }
-            100% { transform: translateY(-5px); }
-        }
-
-        .lever {
-            width: 60px;
-            height: 120px;
-            background: linear-gradient(90deg, #c0c0c0, #808080);
-            border-radius: 10px;
-            position: relative;
-            margin: 0 auto;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-
-        .lever-ball {
-            width: 40px;
-            height: 40px;
-            background: radial-gradient(circle at 30% 30%, #ff6b8a, #cc4466);
-            border-radius: 50%;
-            position: absolute;
-            top: -20px;
-            left: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-
-        .lever.pulled {
-            transform: rotate(30deg);
-        }
-
-        /* Quiz styles */
-        .quiz-option {
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 107, 138, 0.5);
-            color: white;
-            padding: 15px 25px;
-            margin: 10px 0;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 1.1rem;
-        }
-
-        .quiz-option:hover {
-            background: rgba(255, 107, 138, 0.3);
-            transform: translateX(10px);
-        }
-
-        .quiz-option.correct {
-            background: rgba(100, 255, 100, 0.3);
-            border-color: #4f4;
-            animation: pulse 0.5s;
-        }
-
-        .quiz-option.wrong {
-            background: rgba(255, 100, 100, 0.3);
-            border-color: #f44;
-            animation: shake 0.5s;
-        }
-
-        /* Love meter */
-        .love-meter {
-            width: 100%;
-            max-width: 300px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            margin: 20px auto;
-            overflow: hidden;
-            border: 2px solid #ff6b8a;
-        }
-
-        .love-meter-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #ff6b8a, #ff4d6d);
-            width: 0%;
-            transition: width 1s ease-out;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding-right: 10px;
-            font-weight: bold;
-            color: white;
-        }
-
-        /* Final step */
-        .final-message {
-            font-family: 'Dancing Script', cursive;
-            font-size: 2.5rem;
-            color: #ff6b8a;
-            margin: 30px 0;
-        }
-
-        .love-btn {
-            background: linear-gradient(135deg, #ff4d6d 0%, #ff758f 100%);
-            font-size: 1.3rem;
-            padding: 20px 50px;
-        }
-
-        .no-btn {
-            background: transparent;
-            border: 2px solid rgba(255, 107, 138, 0.5);
-            color: #ff6b8a;
-            font-size: 0.9rem;
-            padding: 10px 25px;
-            transition: all 0.1s;
-        }
-
-        /* Celebration */
-        .celebration {
-            display: none;
-        }
-
-        .celebration.active {
-            display: block;
-            animation: fadeIn 1s ease-out;
-        }
-
-        .big-heart {
-            font-size: 8rem;
-            animation: pulse 0.5s infinite;
-            display: block;
-            margin: 30px auto;
-        }
-
-        .confetti {
-            position: fixed;
-            width: 10px;
-            height: 10px;
-            background: #ff6b8a;
-            animation: confetti-fall 3s forwards;
-        }
-
-        @keyframes confetti-fall {
-            0% {
-                transform: translateY(-100vh) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(100vh) rotate(720deg);
-                opacity: 0;
-            }
-        }
-
-        .summary-item {
-            background: rgba(255, 107, 138, 0.2);
-            padding: 15px 25px;
-            border-radius: 15px;
-            margin: 10px 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .mini-game-title {
-            color: #ff6b8a;
-            font-size: 1rem;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .instruction {
-            color: #aaa;
-            font-size: 0.9rem;
-            margin-top: 10px;
-            font-style: italic;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DESY STARS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-    <div class="hearts-bg" id="hearts-bg"></div>
-    
-    <div class="container">
-        <!-- Step 0: Intro -->
-        <div class="step active" id="step0">
-            <div class="emoji-big">🎰</div>
-            <h1 class="title">Ehi piccola Desy!</h1>
-            <div class="message-box">
-                <p class="message">
-                    Ho preparato un paio di cosette per te amore...<br><br>
-                    Pronta a giocare? 🎮
-                </p>
-                <button class="btn" onclick="nextStep(1)">Vediamo! 👀</button>
-            </div>
-        </div>
+  <div class="sky" aria-hidden="true">
+    <div class="cloud c1"></div>
+    <div class="cloud c2"></div>
+    <div class="cloud c3"></div>
+    <div class="stars-layer" id="starsLayer"></div>
+  </div>
 
-        <!-- Step 1: Gratta e Vinci - Cena -->
-        <div class="step" id="step1">
-            <div class="emoji-big">🎫</div>
-            <h1 class="title">Gratta e Vinci!</h1>
-            <div class="message-box">
-                <p class="mini-game-title">🎰 Sorpresa #1 🎰</p>
-                <p class="message">
-                    Gratta per scoprire cosa facciamo stasera...
-                </p>
-                <div class="scratch-container" id="scratch1">
-                    <div class="scratch-content">
-                        🍽️ CENA FUORI! 🍽️
-                    </div>
-                    <canvas id="scratchCanvas1"></canvas>
-                </div>
-                <p class="instruction">Usa il mouse per grattare!</p>
-                <button class="btn" id="btn1" style="display: none;" onclick="nextStep(2)">Bella! Avanti 👉</button>
-            </div>
-        </div>
+  <!-- HOME -->
+  <main id="view-home" class="view active">
+    <header class="hero">
+      <div class="brand-badge">
+        <svg class="star-icon" viewBox="0 0 64 64" aria-hidden="true">
+          <path d="M32 4 L38 24 L58 24 L42 36 L48 56 L32 44 L16 56 L22 36 L6 24 L26 24 Z" />
+        </svg>
+        <h1 class="brand">DESY</h1>
+        <p class="brand-sub">STARS</p>
+      </div>
+      <p class="tagline">La tua arena personale. Respira. Vince. Brilla.</p>
+    </header>
 
-        <!-- Step 2: Slot Machine - Sabato -->
-        <div class="step" id="step2">
-            <div class="emoji-big animated">🎰</div>
-            <h1 class="title">Slot Machine!</h1>
-            <div class="message-box">
-                <p class="mini-game-title">🎲 Cosa facciamo Sabato? 🎲</p>
-                <p class="message">
-                    Tira la leva e vedi cosa esce!<br>
-                    <small>(tranqui, è truccata 😏)</small>
-                </p>
-                <div class="slot-machine">
-                    <div class="slot-display">
-                        <div class="slot-window" id="slot1">❓</div>
-                        <div class="slot-window" id="slot2">❓</div>
-                        <div class="slot-window" id="slot3">❓</div>
-                    </div>
-                    <button class="btn" id="spinBtn" onclick="spinSlots()">🎰 TIRA!</button>
-                </div>
-                <div id="slotResult" style="display: none;">
-                    <p class="message" style="margin-top: 20px;">Scegli tu!</p>
-                    <div class="choice-container">
-                        <button class="btn btn-choice" onclick="choose('sabato', 'Pisa 🏛️'); nextStep(3)">
-                            🏛️ Pisa
-                        </button>
-                        <button class="btn btn-choice" onclick="choose('sabato', 'Spa 💆‍♀️'); nextStep(3)">
-                            💆‍♀️ Spa
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <section class="character-stage" aria-hidden="true">
+      <div class="brawler pinky float-a">
+        <svg viewBox="0 0 160 180" class="brawler-svg">
+          <ellipse cx="80" cy="168" rx="42" ry="8" fill="rgba(0,0,0,.25)"/>
+          <path d="M45 95 Q40 145 55 160 L105 160 Q120 145 115 95 Z" fill="#ff4fa3"/>
+          <path d="M45 95 Q40 145 55 160 L105 160 Q120 145 115 95 Z" fill="none" stroke="#1a1030" stroke-width="5"/>
+          <circle cx="80" cy="72" r="48" fill="#ffb6d9"/>
+          <circle cx="80" cy="72" r="48" fill="none" stroke="#1a1030" stroke-width="5"/>
+          <ellipse cx="62" cy="70" rx="12" ry="16" fill="#fff"/>
+          <ellipse cx="98" cy="70" rx="12" ry="16" fill="#fff"/>
+          <circle cx="64" cy="72" r="6" fill="#1a1030"/>
+          <circle cx="100" cy="72" r="6" fill="#1a1030"/>
+          <path d="M68 92 Q80 102 92 92" fill="none" stroke="#1a1030" stroke-width="4" stroke-linecap="round"/>
+          <path d="M48 48 Q55 28 72 38" fill="none" stroke="#ff2d87" stroke-width="8" stroke-linecap="round"/>
+          <path d="M112 48 Q105 28 88 38" fill="none" stroke="#ff2d87" stroke-width="8" stroke-linecap="round"/>
+          <circle cx="118" cy="88" r="10" fill="#ff5eb0"/>
+          <circle cx="42" cy="88" r="10" fill="#ff5eb0"/>
+        </svg>
+      </div>
+      <div class="brawler shelly float-b">
+        <svg viewBox="0 0 160 180" class="brawler-svg">
+          <ellipse cx="80" cy="168" rx="42" ry="8" fill="rgba(0,0,0,.25)"/>
+          <path d="M48 100 Q44 148 58 162 L102 162 Q116 148 112 100 Z" fill="#ffd54a"/>
+          <path d="M48 100 Q44 148 58 162 L102 162 Q116 148 112 100 Z" fill="none" stroke="#1a1030" stroke-width="5"/>
+          <circle cx="80" cy="74" r="46" fill="#ffcc80"/>
+          <circle cx="80" cy="74" r="46" fill="none" stroke="#1a1030" stroke-width="5"/>
+          <path d="M40 58 Q80 20 120 58" fill="#5d4037" stroke="#1a1030" stroke-width="4"/>
+          <ellipse cx="64" cy="76" rx="11" ry="14" fill="#fff"/>
+          <ellipse cx="96" cy="76" rx="11" ry="14" fill="#fff"/>
+          <circle cx="66" cy="78" r="5.5" fill="#1a1030"/>
+          <circle cx="98" cy="78" r="5.5" fill="#1a1030"/>
+          <path d="M70 96 Q80 104 90 96" fill="none" stroke="#1a1030" stroke-width="4" stroke-linecap="round"/>
+          <rect x="108" y="98" width="28" height="14" rx="4" fill="#8d6e63" stroke="#1a1030" stroke-width="3"/>
+        </svg>
+      </div>
+      <div class="brawler spike float-c">
+        <svg viewBox="0 0 160 180" class="brawler-svg">
+          <ellipse cx="80" cy="168" rx="42" ry="8" fill="rgba(0,0,0,.25)"/>
+          <circle cx="80" cy="95" r="52" fill="#7cfc00"/>
+          <circle cx="80" cy="95" r="52" fill="none" stroke="#1a1030" stroke-width="5"/>
+          <polygon points="80,20 92,55 68,55" fill="#57c100" stroke="#1a1030" stroke-width="3"/>
+          <polygon points="30,55 58,70 42,88" fill="#57c100" stroke="#1a1030" stroke-width="3"/>
+          <polygon points="130,55 102,70 118,88" fill="#57c100" stroke="#1a1030" stroke-width="3"/>
+          <polygon points="40,130 62,112 70,135" fill="#57c100" stroke="#1a1030" stroke-width="3"/>
+          <polygon points="120,130 98,112 90,135" fill="#57c100" stroke="#1a1030" stroke-width="3"/>
+          <ellipse cx="64" cy="92" rx="10" ry="14" fill="#1a1030"/>
+          <ellipse cx="96" cy="92" rx="10" ry="14" fill="#1a1030"/>
+          <circle cx="67" cy="88" r="3" fill="#fff"/>
+          <circle cx="99" cy="88" r="3" fill="#fff"/>
+          <path d="M70 112 Q80 120 90 112" fill="none" stroke="#1a1030" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </section>
 
-        <!-- Step 3: Quiz - Londra -->
-        <div class="step" id="step3">
-            <div class="emoji-big">✈️</div>
-            <h1 class="title">Quiz Time!</h1>
-            <div class="message-box">
-                <p class="mini-game-title">🧠 Domanda da 1 Milione 🧠</p>
-                <p class="message">
-                    Dal <span class="highlight">12 al 15 Marzo</span>...<br>
-                    Vuoi venire a Londra con me?
-                </p>
-                <div id="quizOptions">
-                    <div class="quiz-option" onclick="quizAnswer(this, true)">
-                        A) Ovvio che sì! 🇬🇧
-                    </div>
-                    <div class="quiz-option" onclick="quizAnswer(this, true)">
-                        B) Certo che sì! ✈️
-                    </div>
-                    <div class="quiz-option" onclick="quizAnswer(this, true)">
-                        C) Assolutamente sì! 🎉
-                    </div>
-                    <div class="quiz-option" onclick="quizAnswer(this, false)">
-                        D) No grazie
-                    </div>
-                </div>
-                <div class="love-meter" id="loveMeter" style="display: none;">
-                    <div class="love-meter-fill" id="loveMeterFill"></div>
-                </div>
-                <button class="btn" id="btn3" style="display: none;" onclick="nextStep(4)">Ultima domanda! 👉</button>
-            </div>
-        </div>
+    <nav class="home-actions">
+      <button type="button" class="bs-btn bs-btn-panic" data-go="panic">
+        <span class="btn-icon" aria-hidden="true">💗</span>
+        <span class="btn-text">
+          <strong>Crisi di Panico</strong>
+          <small>Guida step-by-step</small>
+        </span>
+      </button>
+      <button type="button" class="bs-btn bs-btn-goals" data-go="goals">
+        <span class="btn-icon" aria-hidden="true">🏆</span>
+        <span class="btn-text">
+          <strong>I Miei Obiettivi</strong>
+          <small>Vince e guadagna premi</small>
+        </span>
+      </button>
+    </nav>
+  </main>
 
-        <!-- Step 4: Mi ami? -->
-        <div class="step" id="step4">
-            <div class="emoji-big animated">💘</div>
-            <h1 class="title animated">E ora...</h1>
-            <div class="message-box">
-                <p class="message">
-                    Ok, ultima cosa.<br>
-                    Domanda secca:
-                </p>
-                <p class="final-message">Mi ami? 🤔</p>
-                <div class="choice-container">
-                    <button class="btn love-btn" onclick="showCelebration()">
-                        Sì! 💖
-                    </button>
-                    <button class="btn no-btn" id="noBtn">
-                        No 💔
-                    </button>
-                </div>
-                <p class="instruction" id="noHint" style="display: none;"></p>
-            </div>
+  <!-- PANIC GUIDE -->
+  <section id="view-panic" class="view">
+    <div class="panel panic-panel">
+      <button type="button" class="back-btn" data-go="home" aria-label="Torna alla home">←</button>
+      <div class="panel-head">
+        <div class="mini-brawler" aria-hidden="true">
+          <svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="#ffb6d9" stroke="#1a1030" stroke-width="4"/><ellipse cx="30" cy="38" rx="7" ry="10" fill="#fff"/><ellipse cx="50" cy="38" rx="7" ry="10" fill="#fff"/><circle cx="32" cy="40" r="3.5" fill="#1a1030"/><circle cx="52" cy="40" r="3.5" fill="#1a1030"/><path d="M32 52 Q40 58 48 52" fill="none" stroke="#1a1030" stroke-width="3" stroke-linecap="round"/></svg>
         </div>
+        <div>
+          <h2>Modalità Calma</h2>
+          <p class="panel-sub">Sei al sicuro. Andiamo insieme, un passo alla volta.</p>
+        </div>
+      </div>
 
-        <!-- Celebration -->
-        <div class="celebration" id="celebration">
-            <span class="big-heart">💖</span>
-            <h1 class="title animated">Lo sapevo! 😏</h1>
-            <div class="message-box">
-                <p class="message">
-                    Buona continuazione di giornata amore mio! 🥰
-                </p>
-                <div style="margin-top: 30px;">
-                    <p style="color: #ff6b8a; margin-bottom: 15px;">📋 Ricapitolando:</p>
-                    <div class="summary-item">
-                        <span>🍽️</span>
-                        <span>Stasera: Cena fuori</span>
-                    </div>
-                    <div class="summary-item">
-                        <span>📅</span>
-                        <span>Sabato: <span id="choice-sabato">...</span></span>
-                    </div>
-                    <div class="summary-item">
-                        <span>✈️</span>
-                        <span>12-15 Marzo: <span id="choice-londra">Londra!</span></span>
-                    </div>
-                </div>
-                <p style="margin-top: 30px; font-size: 1.5rem;">
-                    ❤️
-                </p>
-            </div>
-        </div>
+      <div class="progress-track" aria-hidden="true">
+        <div class="progress-fill" id="panicProgress"></div>
+      </div>
+      <p class="step-counter" id="panicCounter">Passo 1 di 6</p>
+
+      <div class="step-card" id="panicStep">
+        <!-- filled by JS -->
+      </div>
+
+      <div class="step-actions">
+        <button type="button" class="bs-btn bs-btn-ghost" id="panicPrev" hidden>Indietro</button>
+        <button type="button" class="bs-btn bs-btn-pink" id="panicNext">Ok, prossimo →</button>
+      </div>
     </div>
+  </section>
 
-    <script>
-        // Crea cuori fluttuanti (meno di prima)
-        function createFloatingHearts() {
-            const container = document.getElementById('hearts-bg');
-            const hearts = ['💕', '💖', '❤️'];
-            
-            for (let i = 0; i < 10; i++) {
-                const heart = document.createElement('div');
-                heart.className = 'floating-heart';
-                heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
-                heart.style.left = Math.random() * 100 + '%';
-                heart.style.animationDelay = Math.random() * 15 + 's';
-                heart.style.fontSize = (Math.random() * 15 + 12) + 'px';
-                container.appendChild(heart);
-            }
-        }
+  <!-- GOALS -->
+  <section id="view-goals" class="view">
+    <div class="panel goals-panel">
+      <button type="button" class="back-btn" data-go="home" aria-label="Torna alla home">←</button>
+      <div class="panel-head">
+        <div class="mini-brawler" aria-hidden="true">
+          <svg viewBox="0 0 80 80"><circle cx="40" cy="42" r="30" fill="#7cfc00" stroke="#1a1030" stroke-width="4"/><polygon points="40,8 46,28 34,28" fill="#57c100" stroke="#1a1030" stroke-width="2"/><ellipse cx="32" cy="40" rx="6" ry="9" fill="#1a1030"/><ellipse cx="48" cy="40" rx="6" ry="9" fill="#1a1030"/><circle cx="34" cy="37" r="2" fill="#fff"/><circle cx="50" cy="37" r="2" fill="#fff"/></svg>
+        </div>
+        <div>
+          <h2>Arena Obiettivi</h2>
+          <p class="panel-sub">Segna le vittorie. Ogni obiettivo completato = premio!</p>
+        </div>
+      </div>
 
-        const choices = {};
+      <div class="trophy-bar">
+        <div class="trophy-stat">
+          <span class="trophy-label">Stelle</span>
+          <strong id="starCount">0</strong>
+        </div>
+        <div class="trophy-stat">
+          <span class="trophy-label">Completati</span>
+          <strong id="doneCount">0</strong>
+        </div>
+        <div class="trophy-stat">
+          <span class="trophy-label">In corso</span>
+          <strong id="openCount">0</strong>
+        </div>
+      </div>
 
-        function choose(key, value) {
-            choices[key] = value;
-        }
+      <form class="goal-form" id="goalForm">
+        <input type="text" id="goalInput" maxlength="80" placeholder="Scrivi un nuovo obiettivo..." required autocomplete="off" />
+        <button type="submit" class="bs-btn bs-btn-pink compact">Aggiungi</button>
+      </form>
 
-        function nextStep(stepNum) {
-            document.querySelectorAll('.step').forEach(step => {
-                step.classList.remove('active');
-            });
-            document.getElementById('step' + stepNum).classList.add('active');
-            
-            // Inizializza scratch card se necessario
-            if (stepNum === 1) {
-                setTimeout(initScratchCard, 100);
-            }
-        }
+      <ul class="goal-list" id="goalList"></ul>
+      <p class="empty-goals" id="emptyGoals">Nessun obiettivo ancora. Aggiungine uno e diventa una star!</p>
+    </div>
+  </section>
 
-        // SCRATCH CARD
-        let scratchInitialized = false;
-        
-        function initScratchCard() {
-            if (scratchInitialized) return;
-            scratchInitialized = true;
-            
-            const canvas = document.getElementById('scratchCanvas1');
-            const container = document.getElementById('scratch1');
-            const ctx = canvas.getContext('2d');
-            
-            // Imposta dimensioni canvas
-            const rect = container.getBoundingClientRect();
-            canvas.width = rect.width;
-            canvas.height = rect.height;
-            
-            // Disegna lo sfondo grigio
-            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-            gradient.addColorStop(0, '#666');
-            gradient.addColorStop(1, '#999');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // Testo
-            ctx.fillStyle = '#fff';
-            ctx.font = 'bold 18px Quicksand, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('✨ GRATTA QUI ✨', canvas.width/2, canvas.height/2);
-            
-            let isDrawing = false;
-            let lastX = 0;
-            let lastY = 0;
-            let totalScratched = 0;
-            
-            function getPos(e) {
-                const canvasRect = canvas.getBoundingClientRect();
-                let clientX, clientY;
-                
-                if (e.touches && e.touches.length > 0) {
-                    clientX = e.touches[0].clientX;
-                    clientY = e.touches[0].clientY;
-                } else {
-                    clientX = e.clientX;
-                    clientY = e.clientY;
-                }
-                
-                return {
-                    x: (clientX - canvasRect.left) * (canvas.width / canvasRect.width),
-                    y: (clientY - canvasRect.top) * (canvas.height / canvasRect.height)
-                };
-            }
-            
-            function scratch(x, y) {
-                ctx.globalCompositeOperation = 'destination-out';
-                
-                // Disegna una linea dal punto precedente
-                ctx.beginPath();
-                ctx.lineWidth = 50;
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-                ctx.moveTo(lastX, lastY);
-                ctx.lineTo(x, y);
-                ctx.stroke();
-                
-                lastX = x;
-                lastY = y;
-                totalScratched++;
-                
-                // Mostra bottone dopo abbastanza grattate
-                if (totalScratched > 15) {
-                    document.getElementById('btn1').style.display = 'inline-block';
-                }
-            }
-            
-            function startScratch(e) {
-                e.preventDefault();
-                isDrawing = true;
-                const pos = getPos(e);
-                lastX = pos.x;
-                lastY = pos.y;
-                scratch(pos.x, pos.y);
-            }
-            
-            function moveScratch(e) {
-                if (!isDrawing) return;
-                e.preventDefault();
-                const pos = getPos(e);
-                scratch(pos.x, pos.y);
-            }
-            
-            function stopScratch(e) {
-                isDrawing = false;
-            }
-            
-            // Mouse events
-            canvas.addEventListener('mousedown', startScratch);
-            canvas.addEventListener('mousemove', moveScratch);
-            canvas.addEventListener('mouseup', stopScratch);
-            canvas.addEventListener('mouseleave', stopScratch);
-            
-            // Touch events
-            canvas.addEventListener('touchstart', startScratch, { passive: false });
-            canvas.addEventListener('touchmove', moveScratch, { passive: false });
-            canvas.addEventListener('touchend', stopScratch);
-            canvas.addEventListener('touchcancel', stopScratch);
-        }
+  <!-- REWARD OVERLAY -->
+  <div id="rewardOverlay" class="overlay" hidden>
+    <div class="reward-burst" aria-hidden="true"></div>
+    <div class="reward-card">
+      <div class="reward-character" aria-hidden="true">
+        <svg viewBox="0 0 160 160">
+          <circle cx="80" cy="80" r="58" fill="#ffb6d9" stroke="#1a1030" stroke-width="5"/>
+          <ellipse cx="62" cy="76" rx="12" ry="16" fill="#fff"/>
+          <ellipse cx="98" cy="76" rx="12" ry="16" fill="#fff"/>
+          <circle cx="64" cy="78" r="6" fill="#1a1030"/>
+          <circle cx="100" cy="78" r="6" fill="#1a1030"/>
+          <path d="M66 98 Q80 112 94 98" fill="none" stroke="#1a1030" stroke-width="5" stroke-linecap="round"/>
+          <path d="M48 52 Q40 30 58 38" fill="none" stroke="#ff2d87" stroke-width="8" stroke-linecap="round"/>
+          <path d="M112 52 Q120 30 102 38" fill="none" stroke="#ff2d87" stroke-width="8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h3 id="rewardTitle">VITTORIA!</h3>
+      <p id="rewardText">Hai completato un obiettivo!</p>
+      <p class="reward-prize" id="rewardPrize">+1 ⭐ Stella Rosa</p>
+      <button type="button" class="bs-btn bs-btn-gold" id="rewardClose">Continua a brillare!</button>
+    </div>
+  </div>
 
-        // SLOT MACHINE
-        const slotSymbols = ['🏛️', '💆‍♀️', '🎰', '⭐', '🎲', '🍀'];
-        let spinning = false;
+  <!-- PANIC DONE OVERLAY -->
+  <div id="calmOverlay" class="overlay" hidden>
+    <div class="reward-card calm-card">
+      <div class="reward-character" aria-hidden="true">
+        <svg viewBox="0 0 160 160">
+          <circle cx="80" cy="80" r="58" fill="#ffd54a" stroke="#1a1030" stroke-width="5"/>
+          <ellipse cx="62" cy="76" rx="12" ry="16" fill="#fff"/>
+          <ellipse cx="98" cy="76" rx="12" ry="16" fill="#fff"/>
+          <circle cx="64" cy="78" r="6" fill="#1a1030"/>
+          <circle cx="100" cy="78" r="6" fill="#1a1030"/>
+          <path d="M66 98 Q80 110 94 98" fill="none" stroke="#1a1030" stroke-width="5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h3>Ce l'hai fatta</h3>
+      <p>Hai seguito tutta la guida. Sei una vera star. Respira ancora un po' e torna quando vuoi.</p>
+      <button type="button" class="bs-btn bs-btn-pink" id="calmClose">Torna all'arena</button>
+    </div>
+  </div>
 
-        function spinSlots() {
-            if (spinning) return;
-            spinning = true;
-            
-            const slots = [
-                document.getElementById('slot1'),
-                document.getElementById('slot2'),
-                document.getElementById('slot3')
-            ];
-            
-            document.getElementById('spinBtn').textContent = '🎰 ...';
-            
-            // Animazione spinning
-            slots.forEach(slot => slot.classList.add('spinning'));
-            
-            let spins = 0;
-            const spinInterval = setInterval(() => {
-                slots.forEach(slot => {
-                    slot.textContent = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
-                });
-                spins++;
-                
-                if (spins > 20) {
-                    clearInterval(spinInterval);
-                    slots.forEach(slot => slot.classList.remove('spinning'));
-                    
-                    // Risultato "casuale" (sempre ❓❓❓)
-                    slots[0].textContent = '🤷';
-                    slots[1].textContent = '🤷';
-                    slots[2].textContent = '🤷';
-                    
-                    document.getElementById('spinBtn').style.display = 'none';
-                    document.getElementById('slotResult').style.display = 'block';
-                    spinning = false;
-                }
-            }, 100);
-        }
-
-        // QUIZ
-        let wrongAttempts = 0;
-
-        function quizAnswer(element, correct) {
-            if (correct) {
-                element.classList.add('correct');
-                choose('londra', 'Londra! ✈️');
-                
-                // Mostra love meter
-                document.getElementById('loveMeter').style.display = 'block';
-                setTimeout(() => {
-                    document.getElementById('loveMeterFill').style.width = '100%';
-                    document.getElementById('loveMeterFill').textContent = '100%';
-                }, 100);
-                
-                setTimeout(() => {
-                    document.getElementById('btn3').style.display = 'inline-block';
-                }, 1500);
-                
-                // Disabilita altre opzioni
-                document.querySelectorAll('.quiz-option').forEach(opt => {
-                    opt.style.pointerEvents = 'none';
-                });
-            } else {
-                element.classList.add('wrong');
-                wrongAttempts++;
-                
-                setTimeout(() => {
-                    element.classList.remove('wrong');
-                    // Sposta l'opzione in un posto random
-                    element.style.transform = `translateX(${Math.random() * 100 - 50}px)`;
-                    
-                    if (wrongAttempts === 1) {
-                        element.textContent = 'D) Sicura? 🤨';
-                    } else if (wrongAttempts === 2) {
-                        element.textContent = 'D) Riprova... 😅';
-                    } else {
-                        element.textContent = 'D) Ok ho capito, sì! 😂';
-                        quizAnswer(element, true);
-                    }
-                }, 500);
-            }
-        }
-
-        // BOTTONE NO CHE SCAPPA
-        const noBtn = document.getElementById('noBtn');
-        let escapeCount = 0;
-        const funnyTexts = [
-            'No 💔',
-            'Sicura? 🤔',
-            'Dai... 😢',
-            'Ripensaci! 🥺',
-            'BUGIARDA! 😤',
-            'Lo so che mi ami 😏',
-            'Arrrenditi! 🏳️',
-            'Ok ok, SÌ! 😂'
-        ];
-
-        function escapeNoButton(e) {
-            e.preventDefault();
-            escapeCount++;
-            
-            if (escapeCount >= funnyTexts.length) {
-                // Dopo troppi tentativi, diventa un sì
-                showCelebration();
-                return;
-            }
-            
-            noBtn.textContent = funnyTexts[escapeCount];
-            
-            // Scappa in una posizione random
-            const maxX = window.innerWidth - 150;
-            const maxY = window.innerHeight - 100;
-            
-            noBtn.style.position = 'fixed';
-            noBtn.style.left = Math.max(50, Math.random() * maxX) + 'px';
-            noBtn.style.top = Math.max(50, Math.random() * maxY) + 'px';
-            noBtn.style.zIndex = '1000';
-            
-            // Mostra hint
-            const hints = [
-                '',
-                'Il bottone sembra nervoso...',
-                'Sta scappando!',
-                'Non riesci a prenderlo eh? 😏',
-                'Continua così...',
-                'Quasi quasi...',
-                'Un altro po\'...'
-            ];
-            document.getElementById('noHint').style.display = 'block';
-            document.getElementById('noHint').textContent = hints[Math.min(escapeCount, hints.length - 1)];
-        }
-        
-        // Funziona sia su desktop (mouseover) che mobile (touchstart)
-        noBtn.addEventListener('mouseover', escapeNoButton);
-        noBtn.addEventListener('touchstart', escapeNoButton, { passive: false });
-
-        // CELEBRAZIONE
-        function createConfetti() {
-            const colors = ['#ff6b8a', '#ff8e9e', '#ffb6c1', '#ffd1dc', '#fff', '#f0f'];
-            for (let i = 0; i < 80; i++) {
-                const confetti = document.createElement('div');
-                confetti.className = 'confetti';
-                confetti.style.left = Math.random() * 100 + '%';
-                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-                confetti.style.animationDelay = Math.random() * 2 + 's';
-                confetti.style.width = (Math.random() * 10 + 5) + 'px';
-                confetti.style.height = (Math.random() * 10 + 5) + 'px';
-                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
-                document.body.appendChild(confetti);
-                
-                setTimeout(() => confetti.remove(), 3000);
-            }
-        }
-
-        function showCelebration() {
-            document.querySelectorAll('.step').forEach(step => {
-                step.classList.remove('active');
-            });
-            
-            document.getElementById('choice-sabato').textContent = choices.sabato || '...';
-            document.getElementById('choice-londra').textContent = choices.londra || 'Londra! ✈️';
-            
-            document.getElementById('celebration').classList.add('active');
-            
-            // Reset no button
-            noBtn.style.position = 'relative';
-            noBtn.style.left = 'auto';
-            noBtn.style.top = 'auto';
-            
-            createConfetti();
-            setInterval(createConfetti, 3000);
-        }
-
-        // Init
-        createFloatingHearts();
-    </script>
+  <script src="app.js"></script>
 </body>
 </html>

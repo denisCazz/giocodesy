@@ -1,0 +1,8 @@
+services:
+  desy-stars:
+    build: .
+    image: desy-stars:latest
+    container_name: desy-stars
+    ports:
+      - "80:3000"
+    restart: unless-stopped

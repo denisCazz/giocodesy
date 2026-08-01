@@ -2,8 +2,9 @@
   const CDN = "https://cdn.brawlify.com/brawlers";
   const img = (id, kind = "borders") => `${CDN}/${kind}/${id}.png`;
   const G = window.DesyGame;
-  const STORAGE_KEY = "desy-stars-goals-v1";
-  const MUSIC_KEY = "desy-stars-music-v1";
+  const STORAGE_KEY = "desy-stars-goals-v3";
+  const MUSIC_KEY = "desy-stars-music-v3";
+  const EGGS_KEY = "desy-stars-eggs-v3";
 
   const BRAWLERS = Object.fromEntries(
     G.CHARACTERS.map((c) => [
@@ -184,6 +185,9 @@
     achPopClose: document.getElementById("achPopClose"),
     sadStreak: document.getElementById("sadStreak"),
     coinChip: document.getElementById("coinChip"),
+    welcomeGate: document.getElementById("welcomeGate"),
+    welcomeStart: document.getElementById("welcomeStart"),
+    welcomeMusic: document.getElementById("welcomeMusic"),
   };
 
   let panicIndex = 0;
@@ -220,14 +224,14 @@
 
   function loadEggs() {
     try {
-      return JSON.parse(localStorage.getItem("desy-stars-eggs-v1") || "{}");
+      return JSON.parse(localStorage.getItem(EGGS_KEY) || "{}");
     } catch {
       return {};
     }
   }
 
   function saveEggs() {
-    localStorage.setItem("desy-stars-eggs-v1", JSON.stringify(eggs));
+    localStorage.setItem(EGGS_KEY, JSON.stringify(eggs));
   }
 
   function vibrate(pattern = 12) {
@@ -970,7 +974,7 @@
     handleSecretCode(e.key);
   });
 
-  // boot
+  // boot — fresh first access
   G.applyTheme();
   G.onChange(refreshHud);
   renderHeroStage();
@@ -979,29 +983,56 @@
   renderGoals();
   refreshHud();
 
-  const visit = G.registerVisit();
-  refreshHud();
-  if (visit.streakBroken) {
-    els.sadStreak.hidden = false;
-    els.sadStreak.classList.add("show");
-    setTimeout(() => {
-      els.sadStreak.classList.remove("show");
-      els.sadStreak.hidden = true;
-    }, 2800);
+  function finishWelcome(withMusic) {
+    eggs.welcome = true;
+    eggs.onboarded = true;
+    saveEggs();
+    els.welcomeGate.hidden = true;
+    const visit = G.registerVisit();
+    refreshHud();
+    handleXpResult(visit.openXp);
+    handleXpResult(visit.xpGain);
+    queueAchievements(visit.achievements);
+    if (withMusic && window.DesyMusic) {
+      DesyMusic.play().then((ok) => {
+        if (!ok) return;
+        localStorage.setItem(MUSIC_KEY, "1");
+        els.musicFab.classList.add("playing");
+        els.musicLabel.textContent = "ON";
+      });
+    }
+    showToast("Benvenuta nell’arena, Desy 💗");
   }
-  handleXpResult(visit.xpGain);
-  handleXpResult(visit.openXp);
-  queueAchievements(visit.achievements);
-  if (visit.streakMilestone) {
-    showToast(`🔥 Serie ${visit.streakMilestone} giorni! Bonus XP`);
+
+  els.welcomeStart?.addEventListener("click", () => {
+    sfx("pop");
+    finishWelcome(false);
+  });
+  els.welcomeMusic?.addEventListener("click", () => finishWelcome(true));
+
+  if (!eggs.onboarded) {
+    // Hard reset feel: no leftover goals/progress keys from older versions
+    goals = [];
+    saveGoals();
+    renderGoals();
+    if (els.welcomeGate) els.welcomeGate.hidden = false;
+  } else {
+    const visit = G.registerVisit();
+    refreshHud();
+    if (visit.streakBroken) {
+      els.sadStreak.hidden = false;
+      els.sadStreak.classList.add("show");
+      setTimeout(() => {
+        els.sadStreak.classList.remove("show");
+        els.sadStreak.hidden = true;
+      }, 2800);
+    }
+    handleXpResult(visit.xpGain);
+    handleXpResult(visit.openXp);
+    queueAchievements(visit.achievements);
+    if (visit.streakMilestone) showToast(`🔥 Serie ${visit.streakMilestone} giorni! Bonus XP`);
   }
 
   timeTicker = setInterval(() => G.trackTime(15000), 15000);
   setInterval(spawnSparkles, 4000);
-
-  if (!eggs.welcome) {
-    setTimeout(() => showToast("Benvenuta nell’arena, Desy 💗"), 500);
-    eggs.welcome = true;
-    saveEggs();
-  }
 })();

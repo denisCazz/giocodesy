@@ -478,7 +478,7 @@
     if (typedBuffer.includes("showdown")) {
       typedBuffer = "";
       document.body.classList.add("showdown-mode");
-      showToast("SHOWDOWN MODE — solo Desy nell'arena 荒野");
+      showToast("SHOWDOWN MODE — solo Desy nell'arena!");
       setTimeout(() => document.body.classList.remove("showdown-mode"), 4000);
       eggs.showdownCode = true;
       saveEggs();

@@ -1,7 +1,28 @@
 /* Desy Stars — game progression engine */
 window.DesyGame = (() => {
-  const KEY = "desy-stars-game-v2";
-  const GOALS_KEY = "desy-stars-goals-v1"; // migrate
+  const KEY = "desy-stars-game-v3";
+  const FRESH_FLAG = "desy-stars-fresh-boot-1";
+  const LEGACY_KEYS = [
+    "desy-stars-game-v2",
+    "desy-stars-game-v3",
+    "desy-stars-goals-v1",
+    "desy-stars-goals-v3",
+    "desy-stars-eggs-v1",
+    "desy-stars-eggs-v3",
+    "desy-stars-daily-v1",
+    "desy-stars-music-v1",
+    "desy-stars-music-v3",
+  ];
+
+  // One-shot wipe so this build opens as a true first access
+  try {
+    if (!localStorage.getItem(FRESH_FLAG)) {
+      LEGACY_KEYS.forEach((k) => localStorage.removeItem(k));
+      localStorage.setItem(FRESH_FLAG, "1");
+    }
+  } catch {
+    /* ignore */
+  }
 
   const XP_TABLE = {
     openSite: 5,
@@ -142,42 +163,23 @@ window.DesyGame = (() => {
         shopBuys: 0,
       },
       growthStage: 0,
-      sessionAwarded: false,
-      dailyVisitAwarded: false,
     };
   }
 
   function load() {
     try {
       const raw = localStorage.getItem(KEY);
-      if (!raw) return migrate();
-      return { ...defaultState(), ...JSON.parse(raw) };
+      if (!raw) return defaultState();
+      const parsed = JSON.parse(raw);
+      return { ...defaultState(), ...parsed, stats: { ...defaultState().stats, ...(parsed.stats || {}) } };
     } catch {
       return defaultState();
     }
   }
 
-  function migrate() {
-    const state = defaultState();
-    try {
-      const oldDaily = JSON.parse(localStorage.getItem("desy-stars-daily-v1") || "null");
-      if (oldDaily) {
-        state.streak = oldDaily.streak || 0;
-        state.bestStreak = oldDaily.streak || 0;
-        state.lastDailyClaim = oldDaily.lastClaim || null;
-        state.dailyCycleDay = oldDaily.cycleDay || 1;
-        state.claimedDays = oldDaily.claimedDays || [];
-        state.weekComplete = !!oldDaily.weekComplete;
-        state.stats.rewardsOpened = oldDaily.total || 0;
-      }
-    } catch {
-      /* ignore */
-    }
-    return state;
-  }
-
   let state = load();
   let listeners = [];
+  let sessionAwarded = false;
 
   function save() {
     localStorage.setItem(KEY, JSON.stringify(state));
@@ -265,9 +267,7 @@ window.DesyGame = (() => {
       }
       state.bestStreak = Math.max(state.bestStreak, state.streak);
       state.lastVisit = today;
-      state.dailyVisitAwarded = false;
       result.xpGain = addXp(XP_TABLE.dailyVisit, "Entrata giornaliera");
-      state.dailyVisitAwarded = true;
       const milestoneAch = checkStreakAchievements();
       result.achievements.push(...milestoneAch);
       if (state.streak === 7) {
@@ -285,9 +285,9 @@ window.DesyGame = (() => {
       }
     }
 
-    if (!state.sessionAwarded) {
+    if (!sessionAwarded) {
       result.openXp = addXp(XP_TABLE.openSite, "Apertura app");
-      state.sessionAwarded = true;
+      sessionAwarded = true;
     }
 
     save();
@@ -453,9 +453,23 @@ window.DesyGame = (() => {
     if (stage >= 5) unlockAchievement("tree_bloom");
   }
 
-  function trackTime(ms) {
-    state.stats.timeSpentMs += ms;
+  function resetAll() {
+    try {
+      [
+        KEY,
+        "desy-stars-goals-v3",
+        "desy-stars-eggs-v3",
+        "desy-stars-music-v3",
+        ...LEGACY_KEYS,
+      ].forEach((k) => localStorage.removeItem(k));
+    } catch {
+      /* ignore */
+    }
+    state = defaultState();
+    sessionAwarded = false;
     save();
+    applyTheme();
+    return state;
   }
 
   function progress() {
@@ -505,5 +519,6 @@ window.DesyGame = (() => {
     trackTime,
     unlockAchievement,
     xpNeeded,
+    resetAll,
   };
 })();

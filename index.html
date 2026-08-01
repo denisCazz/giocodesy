@@ -2,7 +2,8 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#ff4fa3" />
   <title>DESY STARS</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -24,7 +25,7 @@
     <p id="brawlFlashText">BRAWL!</p>
   </div>
 
-  <button type="button" class="music-fab" id="musicFab" aria-label="Musica lobby" aria-pressed="false">
+  <button type="button" class="music-fab bounce-tap" id="musicFab" aria-label="Musica lobby" aria-pressed="false">
     <span class="music-icon" aria-hidden="true">🎵</span>
     <span class="music-label" id="musicLabel">PLAY</span>
   </button>
@@ -32,6 +33,11 @@
   <!-- HOME -->
   <main id="view-home" class="view active">
     <header class="hero">
+      <div class="top-hud">
+        <div class="streak-chip" id="streakChip" title="Serie giornaliera">🔥 <span id="streakValue">0</span></div>
+        <div class="coin-chip" id="coinChip" data-go="shop" role="button" tabindex="0">🪙 <span id="coinValue">0</span></div>
+      </div>
+
       <div class="brand-badge" id="brandBadge" title="Tocca la stella…">
         <button type="button" class="star-hit" id="starHit" aria-label="Stella segreta">
           <svg class="star-icon" viewBox="0 0 64 64" aria-hidden="true">
@@ -41,114 +47,113 @@
         <h1 class="brand" id="brandTitle">DESY</h1>
         <p class="brand-sub">STARS</p>
       </div>
-      <p class="tagline">La tua arena personale. Respira. Vince. Brilla.</p>
+
+      <div class="xp-panel" aria-label="Esperienza">
+        <div class="xp-meta">
+          <strong id="levelLabel">Livello 1</strong>
+          <span id="xpLabel">0 / 100 XP</span>
+        </div>
+        <div class="xp-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="xpTrack">
+          <div class="xp-fill" id="xpFill"></div>
+          <div class="xp-shine" aria-hidden="true"></div>
+        </div>
+      </div>
     </header>
 
     <nav class="home-actions">
-      <button type="button" class="bs-btn bs-btn-panic" data-go="panic">
+      <button type="button" class="bs-btn bs-btn-panic bounce-tap" data-go="panic">
         <span class="btn-icon" aria-hidden="true">💗</span>
         <span class="btn-text">
           <strong>Crisi di Panico</strong>
-          <small>Guida step-by-step</small>
+          <small>Guida calma step-by-step</small>
         </span>
       </button>
-      <button type="button" class="bs-btn bs-btn-goals" data-go="goals">
+      <button type="button" class="bs-btn bs-btn-goals bounce-tap" data-go="goals">
         <span class="btn-icon" aria-hidden="true">🏆</span>
         <span class="btn-text">
           <strong>I Miei Obiettivi</strong>
-          <small>Vince e guadagna premi</small>
+          <small>Progresso e premi XP</small>
         </span>
       </button>
     </nav>
 
-    <button type="button" class="daily-banner" id="dailyBanner" data-go="daily">
+    <button type="button" class="daily-banner bounce-tap pulse" id="dailyBanner" data-go="daily">
       <span class="daily-banner-orb" aria-hidden="true">🎁</span>
       <span class="daily-banner-text">
         <strong id="dailyBannerTitle">Premio Quotidiano</strong>
-        <small id="dailyBannerSub">Ritira la ricompensa di oggi!</small>
+        <small id="dailyBannerSub">Apri la misteriosa scatola!</small>
       </span>
       <span class="daily-streak-pill" id="dailyStreakPill">🔥 0</span>
     </button>
 
-    <p class="egg-hint" id="eggHint">Tocca i brawler… nascondono segreti 👀</p>
+    <nav class="game-nav">
+      <button type="button" class="game-nav-btn bounce-tap" data-go="shop"><span>🛍️</span>Shop</button>
+      <button type="button" class="game-nav-btn bounce-tap" data-go="achievements"><span>🏅</span>Badge</button>
+      <button type="button" class="game-nav-btn bounce-tap" data-go="collection"><span>👾</span>Club</button>
+      <button type="button" class="game-nav-btn bounce-tap" data-go="stats"><span>📊</span>Stats</button>
+      <button type="button" class="game-nav-btn bounce-tap" data-go="tree"><span>🌱</span>Albero</button>
+      <button type="button" class="game-nav-btn bounce-tap" data-go="timeline"><span>✨</span>Storia</button>
+    </nav>
 
-    <section class="character-stage" id="heroStage">
-      <!-- filled by JS with real brawler portraits -->
-    </section>
-
+    <section class="character-stage float-cards" id="heroStage"></section>
+    <p class="egg-hint">Tocca i brawler… nascondono segreti 👀</p>
     <section class="brawler-rail-wrap">
       <h2 class="rail-title">Il tuo club</h2>
       <div class="brawler-rail" id="brawlerRail"></div>
     </section>
-
-    <p class="secret-tip">Codice segreto: digita <kbd>BRAWL</kbd> o <kbd>SHOWDOWN</kbd></p>
   </main>
 
-  <!-- DAILY REWARDS -->
+  <!-- DAILY -->
   <section id="view-daily" class="view">
     <div class="panel daily-panel">
-      <button type="button" class="back-btn" data-go="home" aria-label="Torna alla home">←</button>
+      <button type="button" class="back-btn bounce-tap" data-go="home" aria-label="Torna alla home">←</button>
       <div class="panel-head">
         <img class="mini-brawler-img" src="https://cdn.brawlify.com/brawlers/borders/16000049.png" alt="Janet" width="64" height="64" />
         <div>
-          <h2>Login Giornaliero</h2>
-          <p class="panel-sub">7 giorni di premi. Non perdere lo streak!</p>
+          <h2>Premio Misterioso</h2>
+          <p class="panel-sub">Non si vede finché non apri la scatola!</p>
         </div>
       </div>
-
-      <div class="trophy-bar daily-stats">
-        <div class="trophy-stat">
-          <span class="trophy-label">Streak</span>
-          <strong id="dailyStreakCount">0</strong>
-        </div>
-        <div class="trophy-stat">
-          <span class="trophy-label">Giorno</span>
-          <strong id="dailyDayNum">1</strong>
-        </div>
-        <div class="trophy-stat">
-          <span class="trophy-label">Ritirati</span>
-          <strong id="dailyTotalClaims">0</strong>
-        </div>
+      <div class="mystery-stage" id="mysteryStage">
+        <button type="button" class="mystery-box bounce-tap" id="mysteryBox" aria-label="Apri premio quotidiano">
+          <span class="box-lid"></span>
+          <span class="box-body">🎁</span>
+          <span class="box-glow"></span>
+        </button>
+        <p class="daily-note" id="dailyNote">Tocca la scatola per aprirla</p>
       </div>
-
       <div class="daily-grid" id="dailyGrid"></div>
-
-      <button type="button" class="bs-btn bs-btn-gold" id="dailyClaimBtn">
-        Ritira premio di oggi!
-      </button>
-      <p class="daily-note" id="dailyNote">Torna ogni giorno per premi sempre più grossi.</p>
     </div>
   </section>
 
-  <!-- PANIC GUIDE -->
-  <section id="view-panic" class="view">
-    <div class="panel panic-panel">
-      <button type="button" class="back-btn" data-go="home" aria-label="Torna alla home">←</button>
+  <!-- PANIC -->
+  <section id="view-panic" class="view calm-view">
+    <div class="panel panic-panel calm-panel">
+      <button type="button" class="back-btn bounce-tap" data-go="home" aria-label="Torna alla home">←</button>
       <div class="panel-head">
         <img class="mini-brawler-img" id="panicBuddyImg" src="https://cdn.brawlify.com/brawlers/borders/16000015.png" alt="Piper" width="64" height="64" />
         <div>
           <h2>Modalità Calma</h2>
-          <p class="panel-sub" id="panicBuddyLine">Piper ti accompagna. Un passo alla volta.</p>
+          <p class="panel-sub" id="panicBuddyLine">Un solo percorso. Piano piano.</p>
         </div>
       </div>
-
       <div class="progress-track" id="panicProgressTrack" role="progressbar" aria-label="Progresso guida" aria-valuemin="1" aria-valuemax="6" aria-valuenow="1">
         <div class="progress-fill" id="panicProgress"></div>
       </div>
-      <p class="step-counter" id="panicCounter" aria-live="polite">Passo 1 di 6</p>
-
-      <div class="step-card" id="panicStep" role="region" aria-live="polite" aria-atomic="true"></div>
-
-      <div class="step-actions">
-        <button type="button" class="bs-btn bs-btn-ghost" id="panicPrev" hidden>Indietro</button>
-        <button type="button" class="bs-btn bs-btn-pink" id="panicNext">Ok, prossimo →</button>
+      <div class="panic-timer-row">
+        <p class="step-counter" id="panicCounter" aria-live="polite">Passo 1 di 6</p>
+        <p class="panic-timer" id="panicTimer">00:00</p>
       </div>
-
+      <div class="step-card" id="panicStep" role="region" aria-live="polite" aria-atomic="true"></div>
+      <div class="step-actions">
+        <button type="button" class="bs-btn bs-btn-ghost bounce-tap" id="panicPrev" hidden>Indietro</button>
+        <button type="button" class="bs-btn bs-btn-pink bounce-tap" id="panicNext">Ok, prossimo →</button>
+      </div>
       <details class="help-now">
         <summary>Ho bisogno di aiuto adesso</summary>
         <p>Se non ti senti al sicuro, hai sintomi nuovi o molto intensi, dolore al petto, svenimento o pensieri di farti del male, non usare solo questa guida.</p>
         <a class="help-call" href="tel:112">Chiama il 112</a>
-        <p class="help-note">Puoi anche chiamare subito una persona fidata e dirle: “Ho bisogno che resti con me”.</p>
+        <p class="help-note">Puoi anche chiamare una persona fidata e dirle: “Ho bisogno che resti con me”.</p>
       </details>
     </div>
   </section>
@@ -156,88 +161,204 @@
   <!-- GOALS -->
   <section id="view-goals" class="view">
     <div class="panel goals-panel">
-      <button type="button" class="back-btn" data-go="home" aria-label="Torna alla home">←</button>
+      <button type="button" class="back-btn bounce-tap" data-go="home" aria-label="Torna alla home">←</button>
       <div class="panel-head">
         <img class="mini-brawler-img" src="https://cdn.brawlify.com/brawlers/borders/16000005.png" alt="Spike" width="64" height="64" />
         <div>
           <h2>Arena Obiettivi</h2>
-          <p class="panel-sub">Completa = Starr Drop style! (prova a scrivere <em>3v3</em>)</p>
+          <p class="panel-sub">Ogni passo fa crescere XP e l’albero 🌱</p>
         </div>
       </div>
-
       <div class="trophy-bar">
-        <div class="trophy-stat">
-          <span class="trophy-label">Stelle</span>
-          <strong id="starCount">0</strong>
-        </div>
-        <div class="trophy-stat">
-          <span class="trophy-label">Completati</span>
-          <strong id="doneCount">0</strong>
-        </div>
-        <div class="trophy-stat">
-          <span class="trophy-label">In corso</span>
-          <strong id="openCount">0</strong>
-        </div>
+        <div class="trophy-stat"><span class="trophy-label">Stelle</span><strong id="starCount">0</strong></div>
+        <div class="trophy-stat"><span class="trophy-label">Completati</span><strong id="doneCount">0</strong></div>
+        <div class="trophy-stat"><span class="trophy-label">In corso</span><strong id="openCount">0</strong></div>
       </div>
-
       <form class="goal-form" id="goalForm">
-        <input type="text" id="goalInput" maxlength="80" placeholder="Scrivi un nuovo obiettivo..." required autocomplete="off" />
-        <button type="submit" class="bs-btn bs-btn-pink compact">Aggiungi</button>
+        <input type="text" id="goalInput" maxlength="80" placeholder="Scrivi un obiettivo..." required autocomplete="off" />
+        <button type="submit" class="bs-btn bs-btn-pink compact bounce-tap">Aggiungi</button>
       </form>
-
       <div class="goal-suggestions" aria-label="Obiettivi rapidi">
-        <button type="button" data-quick-goal="Bere un bicchiere d'acqua">💧 Bere acqua</button>
-        <button type="button" data-quick-goal="Fare 5 minuti di movimento">👟 5 min movimento</button>
-        <button type="button" data-quick-goal="Scrivere una cosa bella di oggi">🌸 Una cosa bella</button>
+        <button type="button" data-quick-goal="Bere acqua" data-target="8">💧 Bere acqua ×8</button>
+        <button type="button" data-quick-goal="Minuti di movimento" data-target="10">👟 Movimento ×10</button>
+        <button type="button" data-quick-goal="Cose belle di oggi" data-target="3">🌸 Cose belle ×3</button>
       </div>
-
       <ul class="goal-list" id="goalList"></ul>
-      <p class="empty-goals" id="emptyGoals">Nessun obiettivo ancora. Aggiungine uno e diventa una star!</p>
+      <p class="empty-goals" id="emptyGoals">Nessun obiettivo ancora. Aggiungine uno!</p>
     </div>
   </section>
 
-  <!-- REWARD / STARR DROP -->
+  <!-- SHOP -->
+  <section id="view-shop" class="view">
+    <div class="panel">
+      <button type="button" class="back-btn bounce-tap" data-go="home" aria-label="Home">←</button>
+      <div class="panel-head">
+        <div class="emoji-avatar">🛍️</div>
+        <div>
+          <h2>Shop Arena</h2>
+          <p class="panel-sub">Saldo: <strong id="shopCoins">0</strong> 🪙</p>
+        </div>
+      </div>
+      <div class="shop-grid" id="shopGrid"></div>
+    </div>
+  </section>
+
+  <!-- ACHIEVEMENTS -->
+  <section id="view-achievements" class="view">
+    <div class="panel">
+      <button type="button" class="back-btn bounce-tap" data-go="home" aria-label="Home">←</button>
+      <div class="panel-head">
+        <div class="emoji-avatar">🏅</div>
+        <div>
+          <h2>Achievement</h2>
+          <p class="panel-sub" id="achCount">0 badge sbloccati</p>
+        </div>
+      </div>
+      <div class="ach-grid" id="achGrid"></div>
+    </div>
+  </section>
+
+  <!-- COLLECTION -->
+  <section id="view-collection" class="view">
+    <div class="panel">
+      <button type="button" class="back-btn bounce-tap" data-go="home" aria-label="Home">←</button>
+      <div class="panel-head">
+        <div class="emoji-avatar">👾</div>
+        <div>
+          <h2>Collezione</h2>
+          <p class="panel-sub" id="collectCount">0 / 20 personaggi</p>
+        </div>
+      </div>
+      <div class="collect-progress">
+        <div class="xp-track"><div class="xp-fill" id="collectFill"></div></div>
+      </div>
+      <div class="collect-grid" id="collectGrid"></div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section id="view-stats" class="view">
+    <div class="panel">
+      <button type="button" class="back-btn bounce-tap" data-go="home" aria-label="Home">←</button>
+      <div class="panel-head">
+        <div class="emoji-avatar">📊</div>
+        <div>
+          <h2>Le tue Stats</h2>
+          <p class="panel-sub">Il tuo percorso, in numeri</p>
+        </div>
+      </div>
+      <div class="stats-grid" id="statsGrid"></div>
+      <div class="stat-bars" id="statBars"></div>
+    </div>
+  </section>
+
+  <!-- TREE -->
+  <section id="view-tree" class="view">
+    <div class="panel">
+      <button type="button" class="back-btn bounce-tap" data-go="home" aria-label="Home">←</button>
+      <div class="panel-head">
+        <div class="emoji-avatar">🌱</div>
+        <div>
+          <h2>Albero della crescita</h2>
+          <p class="panel-sub">Ogni obiettivo lo fa crescere</p>
+        </div>
+      </div>
+      <div class="tree-stage" id="treeStage" aria-live="polite"></div>
+      <p class="tree-caption" id="treeCaption"></p>
+    </div>
+  </section>
+
+  <!-- TIMELINE -->
+  <section id="view-timeline" class="view">
+    <div class="panel">
+      <button type="button" class="back-btn bounce-tap" data-go="home" aria-label="Home">←</button>
+      <div class="panel-head">
+        <div class="emoji-avatar">✨</div>
+        <div>
+          <h2>Timeline successi</h2>
+          <p class="panel-sub">Anche i piccoli passi restano qui</p>
+        </div>
+      </div>
+      <ul class="timeline-list" id="timelineList"></ul>
+    </div>
+  </section>
+
+  <!-- REWARD / LEVEL UP -->
   <div id="rewardOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="rewardTitle" hidden>
     <div class="reward-burst" aria-hidden="true"></div>
-    <div class="reward-card">
+    <div class="reward-card float-in">
       <img class="reward-portrait" id="rewardImg" src="https://cdn.brawlify.com/brawlers/borders/16000000.png" alt="" width="120" height="120" />
       <p class="rarity-tag" id="rewardRarity">RARE</p>
       <h3 id="rewardTitle">VITTORIA!</h3>
       <p id="rewardText">Hai completato un obiettivo!</p>
-      <p class="reward-prize" id="rewardPrize">+1 ⭐ Stella Rosa</p>
-      <button type="button" class="bs-btn bs-btn-gold" id="rewardClose">Continua a brillare!</button>
+      <p class="reward-prize" id="rewardPrize">+50 XP</p>
+      <button type="button" class="bs-btn bs-btn-gold bounce-tap" id="rewardClose">Continua!</button>
     </div>
   </div>
 
-  <!-- PANIC DONE -->
+  <div id="levelOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="levelTitle" hidden>
+    <div class="reward-burst" aria-hidden="true"></div>
+    <div class="reward-card level-card float-in">
+      <div class="level-burst-icon">⭐</div>
+      <h3 id="levelTitle">Nuovo livello!</h3>
+      <p id="levelText">Sei salita di livello</p>
+      <p class="reward-prize" id="levelPrize">Livello 2</p>
+      <button type="button" class="bs-btn bs-btn-pink bounce-tap" id="levelClose">Yay!</button>
+    </div>
+  </div>
+
+  <div id="lootOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Premio" hidden>
+    <div class="loot-stage" id="lootStage">
+      <div class="loot-box opening" id="lootBoxAnim">
+        <div class="loot-lid"></div>
+        <div class="loot-base">🎁</div>
+      </div>
+      <div class="loot-card" id="lootCard" hidden>
+        <div class="loot-icon" id="lootIcon">🪙</div>
+        <h3 id="lootTitle">Premio!</h3>
+        <p id="lootDetail"></p>
+        <button type="button" class="bs-btn bs-btn-gold bounce-tap" id="lootClose">Prendi!</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="achOverlay" class="overlay" role="dialog" aria-modal="true" hidden>
+    <div class="reward-card float-in">
+      <div class="ach-pop-icon" id="achPopIcon">🏅</div>
+      <h3 id="achPopTitle">Badge sbloccato!</h3>
+      <p id="achPopDesc"></p>
+      <button type="button" class="bs-btn bs-btn-pink bounce-tap" id="achPopClose">Fantastico</button>
+    </div>
+  </div>
+
   <div id="calmOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="calmTitle" hidden>
-    <div class="reward-card calm-card">
+    <div class="reward-card calm-card float-in">
       <img class="reward-portrait" src="https://cdn.brawlify.com/brawlers/borders/16000015.png" alt="Piper" width="120" height="120" />
       <h3 id="calmTitle">Ce l'hai fatta</h3>
-      <p>Come dice Piper: mira al cuore… della calma. Sei una vera star.</p>
-      <button type="button" class="bs-btn bs-btn-pink" id="calmClose">Torna all'arena</button>
+      <p>Hai completato la guida. Torna piano piano all’arena.</p>
+      <button type="button" class="bs-btn bs-btn-pink bounce-tap" id="calmClose">Torna all'arena</button>
     </div>
   </div>
 
-  <!-- STARR DROP EASTER EGG -->
   <div id="starrOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Starr Drop" hidden>
     <div class="starr-drop" id="starrDrop">
-      <div class="starr-orb">
-        <span class="starr-q">?</span>
-      </div>
+      <div class="starr-orb"><span class="starr-q">?</span></div>
       <p class="starr-label">STARR DROP</p>
-      <button type="button" class="bs-btn bs-btn-gold" id="starrOpen">APRILA!</button>
+      <button type="button" class="bs-btn bs-btn-gold bounce-tap" id="starrOpen">APRILA!</button>
     </div>
     <div class="reward-card starr-result" id="starrResult" hidden>
       <img class="reward-portrait" id="starrResultImg" alt="" width="140" height="140" />
       <p class="rarity-tag" id="starrResultRarity">MYTHIC</p>
       <h3 id="starrResultTitle">NUOVO BRAWLER!</h3>
       <p id="starrResultText"></p>
-      <button type="button" class="bs-btn bs-btn-pink" id="starrClose">YEAH!</button>
+      <button type="button" class="bs-btn bs-btn-pink bounce-tap" id="starrClose">YEAH!</button>
     </div>
   </div>
 
+  <div id="sadStreak" class="sad-streak" hidden>💔 Serie interrotta… ricominciamo domani</div>
+
   <script src="music.js"></script>
+  <script src="game.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

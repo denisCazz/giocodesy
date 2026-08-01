@@ -18,7 +18,7 @@
     <div class="stars-layer" id="starsLayer"></div>
   </div>
 
-  <div id="toast" class="toast" hidden></div>
+  <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true" hidden></div>
   <div id="brawlFlash" class="brawl-flash" hidden>
     <img id="brawlFlashImg" alt="" />
     <p id="brawlFlashText">BRAWL!</p>
@@ -28,15 +28,6 @@
     <span class="music-icon" aria-hidden="true">🎵</span>
     <span class="music-label" id="musicLabel">PLAY</span>
   </button>
-
-  <div id="audioGate" class="audio-gate">
-    <div class="audio-gate-card">
-      <p class="audio-gate-title">DESY STARS</p>
-      <p class="audio-gate-text">Tocca per entrare nell'arena con la musichetta 🎵</p>
-      <button type="button" class="bs-btn bs-btn-gold" id="audioGateBtn">Entra &amp; Play!</button>
-      <button type="button" class="gate-skip" id="audioGateSkip">Entra senza audio</button>
-    </div>
-  </div>
 
   <!-- HOME -->
   <main id="view-home" class="view active">
@@ -141,17 +132,24 @@
         </div>
       </div>
 
-      <div class="progress-track" aria-hidden="true">
+      <div class="progress-track" id="panicProgressTrack" role="progressbar" aria-label="Progresso guida" aria-valuemin="1" aria-valuemax="6" aria-valuenow="1">
         <div class="progress-fill" id="panicProgress"></div>
       </div>
-      <p class="step-counter" id="panicCounter">Passo 1 di 6</p>
+      <p class="step-counter" id="panicCounter" aria-live="polite">Passo 1 di 6</p>
 
-      <div class="step-card" id="panicStep"></div>
+      <div class="step-card" id="panicStep" role="region" aria-live="polite" aria-atomic="true"></div>
 
       <div class="step-actions">
         <button type="button" class="bs-btn bs-btn-ghost" id="panicPrev" hidden>Indietro</button>
         <button type="button" class="bs-btn bs-btn-pink" id="panicNext">Ok, prossimo →</button>
       </div>
+
+      <details class="help-now">
+        <summary>Ho bisogno di aiuto adesso</summary>
+        <p>Se non ti senti al sicuro, hai sintomi nuovi o molto intensi, dolore al petto, svenimento o pensieri di farti del male, non usare solo questa guida.</p>
+        <a class="help-call" href="tel:112">Chiama il 112</a>
+        <p class="help-note">Puoi anche chiamare subito una persona fidata e dirle: “Ho bisogno che resti con me”.</p>
+      </details>
     </div>
   </section>
 
@@ -187,13 +185,19 @@
         <button type="submit" class="bs-btn bs-btn-pink compact">Aggiungi</button>
       </form>
 
+      <div class="goal-suggestions" aria-label="Obiettivi rapidi">
+        <button type="button" data-quick-goal="Bere un bicchiere d'acqua">💧 Bere acqua</button>
+        <button type="button" data-quick-goal="Fare 5 minuti di movimento">👟 5 min movimento</button>
+        <button type="button" data-quick-goal="Scrivere una cosa bella di oggi">🌸 Una cosa bella</button>
+      </div>
+
       <ul class="goal-list" id="goalList"></ul>
       <p class="empty-goals" id="emptyGoals">Nessun obiettivo ancora. Aggiungine uno e diventa una star!</p>
     </div>
   </section>
 
   <!-- REWARD / STARR DROP -->
-  <div id="rewardOverlay" class="overlay" hidden>
+  <div id="rewardOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="rewardTitle" hidden>
     <div class="reward-burst" aria-hidden="true"></div>
     <div class="reward-card">
       <img class="reward-portrait" id="rewardImg" src="https://cdn.brawlify.com/brawlers/borders/16000000.png" alt="" width="120" height="120" />
@@ -206,17 +210,17 @@
   </div>
 
   <!-- PANIC DONE -->
-  <div id="calmOverlay" class="overlay" hidden>
+  <div id="calmOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="calmTitle" hidden>
     <div class="reward-card calm-card">
       <img class="reward-portrait" src="https://cdn.brawlify.com/brawlers/borders/16000015.png" alt="Piper" width="120" height="120" />
-      <h3>Ce l'hai fatta</h3>
+      <h3 id="calmTitle">Ce l'hai fatta</h3>
       <p>Come dice Piper: mira al cuore… della calma. Sei una vera star.</p>
       <button type="button" class="bs-btn bs-btn-pink" id="calmClose">Torna all'arena</button>
     </div>
   </div>
 
   <!-- STARR DROP EASTER EGG -->
-  <div id="starrOverlay" class="overlay" hidden>
+  <div id="starrOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Starr Drop" hidden>
     <div class="starr-drop" id="starrDrop">
       <div class="starr-orb">
         <span class="starr-q">?</span>

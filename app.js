@@ -52,9 +52,9 @@
   const PANIC_STEPS = [
     {
       emoji: "🛑",
-      title: "Stop. Sei al sicuro.",
-      body: "Desy, fermati. Non sei in Showdown: qui nessuno ti spara. Questo momento passerà. Sei al sicuro.",
-      hint: "Come Shelly all'inizio: riparti dalle basi. Mano sul petto.",
+      title: "Stop. Guarda dove sei.",
+      body: "Desy, fermati un momento. Se il luogo intorno a te è sicuro, appoggia bene i piedi e nota il sostegno sotto di te. Questa ondata può diminuire, un passo alla volta.",
+      hint: "Se non sei al sicuro o i sintomi sono nuovi o diversi dal solito, apri “Ho bisogno di aiuto adesso” qui sotto.",
       buddy: "shelly",
       line: "Shelly: «Ripartiamo insieme.»",
     },
@@ -70,7 +70,7 @@
     {
       emoji: "🌬️",
       title: "Respira con Piper",
-      body: "Segui il cerchio: inspira mentre cresce, trattieni, espira mentre rimpicciolisce. Almeno 4 cicli. Mira alla calma.",
+      body: "Segui il cerchio senza forzare: inspira dolcemente e lascia che l'espirazione sia un po' più lunga. Prova 4 cicli, poi torna al tuo ritmo.",
       hint: "Come un colpo carico di Piper: lento, preciso, potente.",
       breathe: true,
       buddy: "piper",
@@ -79,7 +79,7 @@
     {
       emoji: "💬",
       title: "Power-up mentale",
-      body: "Di' forte: «È un attacco di panico. Il corpo è in allarme, ma non c'è pericolo reale. Passerà.»",
+      body: "Puoi dirti: «Il mio corpo è in allarme. Ho già attraversato momenti difficili. Posso fare un passo alla volta e chiedere aiuto se ne ho bisogno.»",
       hint: "Poco metterebbe la colonna sonora. Tu metti le parole.",
       buddy: "poco",
       line: "Poco: «Let's rock… piano piano.»",
@@ -95,8 +95,8 @@
     {
       emoji: "⭐",
       title: "Victory screen",
-      body: "Hai finito la partita contro il panico. Bevi un sorso d'acqua. Sei più forte di un brawler mythic. Torna quando vuoi.",
-      hint: "Se serve, replay dal passo 1. Sempre.",
+      body: "Hai completato la guida. Se ti va, bevi un sorso d'acqua e resta seduta qualche minuto. Se i sintomi non diminuiscono o ti preoccupano, contatta una persona fidata o il 112.",
+      hint: "Questa guida dà supporto, ma non sostituisce un medico o un professionista.",
       buddy: "spike",
       line: "Spike: «…» (ti fa un fiore)",
     },
@@ -117,6 +117,7 @@
     panicStep: document.getElementById("panicStep"),
     panicCounter: document.getElementById("panicCounter"),
     panicProgress: document.getElementById("panicProgress"),
+    panicProgressTrack: document.getElementById("panicProgressTrack"),
     panicPrev: document.getElementById("panicPrev"),
     panicNext: document.getElementById("panicNext"),
     panicBuddyImg: document.getElementById("panicBuddyImg"),
@@ -155,9 +156,6 @@
     starrClose: document.getElementById("starrClose"),
     musicFab: document.getElementById("musicFab"),
     musicLabel: document.getElementById("musicLabel"),
-    audioGate: document.getElementById("audioGate"),
-    audioGateBtn: document.getElementById("audioGateBtn"),
-    audioGateSkip: document.getElementById("audioGateSkip"),
     dailyBanner: document.getElementById("dailyBanner"),
     dailyBannerTitle: document.getElementById("dailyBannerTitle"),
     dailyBannerSub: document.getElementById("dailyBannerSub"),
@@ -352,34 +350,6 @@
     else if (name === "fanfare") await DesyMusic.fanfare();
   }
 
-  async function enterWithMusic() {
-    if (window.DesyMusic) {
-      await DesyMusic.unlock();
-      await DesyMusic.play();
-      localStorage.setItem(MUSIC_KEY, "1");
-      updateMusicFab(true);
-      await DesyMusic.pop();
-    }
-    closeAudioGate();
-    showToast("Musichetta attiva! 🎵");
-  }
-
-  function closeAudioGate() {
-    if (!els.audioGate) return;
-    els.audioGate.classList.add("hide");
-    setTimeout(() => {
-      els.audioGate.hidden = true;
-    }, 280);
-  }
-
-  async function enterSilent() {
-    if (window.DesyMusic) await DesyMusic.unlock();
-    localStorage.setItem(MUSIC_KEY, "0");
-    updateMusicFab(false);
-    closeAudioGate();
-    showToast("Tocca 🎵 quando vuoi la musica");
-  }
-
   function loadGoals() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -526,6 +496,7 @@
     const buddy = BRAWLERS[step.buddy];
     els.panicCounter.textContent = `Passo ${panicIndex + 1} di ${total}`;
     els.panicProgress.style.width = `${((panicIndex + 1) / total) * 100}%`;
+    els.panicProgressTrack.setAttribute("aria-valuenow", String(panicIndex + 1));
     els.panicPrev.hidden = panicIndex === 0;
     els.panicNext.textContent = panicIndex === total - 1 ? "Victory! ⭐" : "Ok, prossimo →";
     els.panicBuddyImg.src = img(buddy.id);
@@ -533,7 +504,13 @@
     els.panicBuddyLine.textContent = step.line;
 
     let extra = "";
-    if (step.breathe) extra = `<div class="breathe-circle" aria-hidden="true">Respira</div>`;
+    if (step.breathe) {
+      extra = `
+        <div class="breathe-guide">
+          <div class="breathe-circle" aria-hidden="true">4 → 6</div>
+          <p><strong>Inspira per 4 secondi, espira per 6.</strong><br>Non trattenere il respiro. Se ti gira la testa, torna al tuo ritmo naturale.</p>
+        </div>`;
+    }
     if (step.grounding) {
       extra = `<div class="step-hint" style="margin-bottom:0.75rem">5 vedi · 4 tocca · 3 senti · 2 odora · 1 gusta</div>`;
     }
@@ -616,7 +593,14 @@
       saveEggs();
       showToast("Solo Showdown mentality. Solo tu vs il panico.");
     }
-    goals.unshift({ id: uid(), title: title.trim(), done: false, stars: 1, createdAt: Date.now() });
+    goals.unshift({
+      id: uid(),
+      title: title.trim(),
+      done: false,
+      rewarded: false,
+      stars: 1,
+      createdAt: Date.now(),
+    });
     saveGoals();
     renderGoals();
   }
@@ -626,9 +610,14 @@
     if (!goal) return;
     const wasDone = goal.done;
     goal.done = !goal.done;
+    goal.completedAt = goal.done ? Date.now() : null;
     saveGoals();
     renderGoals();
-    if (goal.done && !wasDone) showReward();
+    if (goal.done && !wasDone && !goal.rewarded) {
+      goal.rewarded = true;
+      saveGoals();
+      showReward();
+    }
   }
 
   function deleteGoal(id) {
@@ -650,6 +639,7 @@
     els.rewardOverlay.hidden = false;
     if (window.DesyMusic) DesyMusic.fanfare();
     burstConfetti(["#ff4fa3", "#ffd54a", "#ff9ed2", "#7cfc00", "#4da3ff", "#fff"]);
+    requestAnimationFrame(() => els.rewardClose.focus());
   }
 
   function openStarrDrop(forcedKey, forcedTitle, forcedRarity) {
@@ -776,6 +766,14 @@
     els.goalInput.focus();
   });
 
+  document.querySelectorAll("[data-quick-goal]").forEach((button) => {
+    button.addEventListener("click", () => {
+      sfx("pop");
+      addGoal(button.getAttribute("data-quick-goal"));
+      showToast("Piccolo passo aggiunto 🌟");
+    });
+  });
+
   els.goalList.addEventListener("click", (e) => {
     const btn = e.target.closest("[data-action]");
     if (!btn) return;
@@ -838,15 +836,11 @@
   });
 
   els.musicFab.addEventListener("click", toggleMusic);
-  els.dailyClaimBtn.addEventListener("click", () => {
-    sfx("fanfare");
-    claimDaily();
-  });
-  els.audioGateBtn.addEventListener("click", enterWithMusic);
-  els.audioGateSkip.addEventListener("click", enterSilent);
+  els.dailyClaimBtn.addEventListener("click", claimDaily);
 
   window.addEventListener("keydown", (e) => {
     if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
     handleSecretCode(e.key);
   });
 
@@ -854,6 +848,17 @@
   const konami = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown"];
   let konamiIdx = 0;
   window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      if (!els.rewardOverlay.hidden) {
+        els.rewardOverlay.hidden = true;
+      } else if (!els.calmOverlay.hidden) {
+        els.calmOverlay.hidden = true;
+      } else if (!els.starrOverlay.hidden) {
+        els.starrOverlay.hidden = true;
+      }
+      return;
+    }
+    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
     if (e.key === konami[konamiIdx]) {
       konamiIdx += 1;
       if (konamiIdx === konami.length) {
